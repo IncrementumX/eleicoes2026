@@ -479,6 +479,28 @@
 }
 
 @layer section {
+  @media (max-width: 640px) {
+    .tbl.agenda, .tbl.agenda tbody, .tbl.agenda tr { display: block; width: 100%; }
+    .tbl.agenda colgroup, .tbl.agenda thead { display: none; }
+    .tbl.agenda tr { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--s-1) var(--s-3); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--line); }
+    .tbl.agenda td { display: block; padding: 0; border: 0; }
+    .tbl.agenda td:nth-child(1) { font-weight: 600; }
+    .tbl.agenda td:nth-child(3) { text-align: right; color: var(--muted); }
+    .tbl.agenda td:nth-child(2), .tbl.agenda td:nth-child(4) { grid-column: 1 / -1; }
+    .tbl.agenda td:nth-child(2) { order: 3; }
+    .tbl.agenda td:nth-child(4) { order: 4; }
+  }
+  .bridge-card { display: flex; flex-direction: column; }
+  .bridge-card > .bridge { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  @media (max-width: 1024px) { .bridge-card > .bridge { justify-content: flex-start; } }
+  .card.flush > .card-head + * { margin-top: 0; }
+  .history-year { display: none; }
+  .glossary { padding: var(--s-4) var(--s-6); }
+  .gloss-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4) var(--s-6); }
+  .gloss-grid dt { font-weight: 600; }
+  .gloss-grid dd { color: var(--muted); font-size: var(--fs-12); line-height: 16px; margin-top: var(--s-1); }
+  @media (max-width: 1024px) { .gloss-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 640px) { .gloss-grid { grid-template-columns: minmax(0, 1fr); } .glossary { padding: var(--s-4); } }
   .step-btn { flex: 0 0 auto; width: var(--s-12); padding: 0; justify-content: center; }
   .touch-range:focus-visible { outline: none; }
   .touch-range:focus-visible::-webkit-slider-thumb { outline: var(--ring); outline-offset: var(--s-1); }
@@ -512,9 +534,8 @@
   }
   .tbl.agenda td, .tbl.agenda th { white-space: normal; }
   body { background: var(--canvas); }
-  .election-frame { max-width: calc(var(--s-12) * 27); margin: var(--s-6) auto; min-height: 100%; min-height: calc(100svh - var(--s-12)); min-height: calc(100dvh - var(--s-12)); }
+  .election-frame { max-width: var(--content-max); margin: var(--s-6) auto; min-height: 100%; min-height: calc(100svh - var(--s-12)); min-height: calc(100dvh - var(--s-12)); }
   .election-header { position: static; }
-  .election-content { max-width: none; }
   .sim-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-6); align-items: stretch; }
   .sim-layout > * { min-width: 0; }
   .results { display: flex; flex-direction: column; gap: var(--s-4); }
@@ -723,12 +744,22 @@
   <main class="content election-content">
     <div class="page-head">
       <div>
-        <h1>Lula x Flávio: O Que Falta Para Virar</h1>
+        <h1>Painel Eleições 2026</h1>
         <p>Flávio terminou o 1º turno 2.224.965 votos à frente (47,03% x 45,16% dos válidos). Com a 3ª via meio a meio, Lula precisa tirar essa diferença entre quem não votou no 1º turno, e o comparecimento caiu no 2º turno em cinco das seis eleições desde 2002. Com a abstenção neutra, Lula precisa de 61,9% dos 9,3 milhões de votos da 3ª via, e as pesquisas mostram a 3ª via pendendo para Flávio.</p>
       </div>
     </div>
 
     <!-- Simulator and its live result share one region. -->
+    <section class="card glossary" aria-labelledby="h-gloss">
+      <h3 class="visually-hidden" id="h-gloss">Como Ler os Números</h3>
+      <dl class="gloss-grid">
+        <div><dt>Abstenção</dt><dd>Eleitor apto que não foi votar. Não entra em nenhuma conta de votos.</dd></div>
+        <div><dt>Voto Branco</dt><dd>Eleitor que foi à urna e não escolheu candidato. Não conta para ninguém.</dd></div>
+        <div><dt>Voto Nulo</dt><dd>Eleitor que digitou um número inexistente. Também não conta para ninguém.</dd></div>
+        <div><dt>Votos Válidos</dt><dd>Só os votos dados a candidatos. É sobre eles que se calcula o %, e vence quem tiver mais da metade.</dd></div>
+      </dl>
+    </section>
+
     <div class="sim-layout">
       <section class="card sim-card" aria-labelledby="h-sim">
         <div class="card-head"><div><h3 id="h-sim">Simulador</h3></div></div>
@@ -785,6 +816,13 @@
                 <div class="field voter-field"><div class="out voter-readout"><label for="outl">Desses, % que era de Lula</label><output id="outl-out" for="outl">50%</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-5" data-target="outl" aria-label="Diminuir 5 pontos">−</button><input id="outl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"><button class="btn touch-button step-btn js-only" type="button" data-step="5" data-target="outl" aria-label="Somar 5 pontos">+</button></div></div>
               </div>
             </section>
+            <section class="flow" aria-label="Trocam de Voto">
+              <div class="flow-head"><h4>Trocam de Voto</h4><span class="hint">Votaram em um dos dois no 1º turno e votam no outro no 2º (até 5 milhões). Cada troca move a margem em 2 votos: um sai de um lado e entra no outro.</span></div>
+              <div class="flow-grid">
+                <div class="field voter-field"><div class="out voter-readout"><label for="fl">Flávio → Lula</label><output id="fl-out" for="fl">0,00 mi (0)</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-250000" data-target="fl" aria-label="Diminuir 250.000 eleitores">−</button><input id="fl" class="touch-range" disabled type="range" min="0" max="5000000" step="1" value="0"><button class="btn touch-button step-btn js-only" type="button" data-step="250000" data-target="fl" aria-label="Somar 250.000 eleitores">+</button></div></div>
+                <div class="field voter-field"><div class="out voter-readout"><label for="lf">Lula → Flávio</label><output id="lf-out" for="lf">0,00 mi (0)</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-250000" data-target="lf" aria-label="Diminuir 250.000 eleitores">−</button><input id="lf" class="touch-range" disabled type="range" min="0" max="5000000" step="1" value="0"><button class="btn touch-button step-btn js-only" type="button" data-step="250000" data-target="lf" aria-label="Somar 250.000 eleitores">+</button></div></div>
+              </div>
+            </section>
           </div>
         </form>
         <div class="card-foot sim-foot"><span>Cenários de pesquisa mudam só Cury, Renan e Caiado; Demais fica 50-50 porque nenhuma das duas pesquisas o informa. Como 2022: −0,36 p.p. (578.779 voltam). Média 2002–18: +2,20 p.p. (3.499.817 deixam)</span></div>
@@ -805,9 +843,9 @@
             <div class="result-note" id="k-a-c">Igual ao 1º turno</div>
           </dl>
         </section>
-        <section class="card" aria-labelledby="h-bridge">
+        <section class="card bridge-card" aria-labelledby="h-bridge">
           <div class="card-head"><div><h3 id="h-bridge">Ponte da Margem</h3><p>Diferença Lula - Flávio: começa no 1º turno e cada grupo soma ou tira votos.</p></div></div>
-          <div class="bridge" id="bridge"><div class="br-axis"><span class="br-ends"><span>Flávio ganha ←</span><span>→ Lula ganha</span></span></div><div class="br-row"><span>1º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div><div class="br-row"><span>Augusto Cury</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Renan Santos</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Ronaldo Caiado</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Demais</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Voltam a votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Deixam de votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row br-tot"><span>2º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div></div>
+          <div class="bridge" id="bridge"><div class="br-axis"><span class="br-ends"><span>Flávio ganha ←</span><span>→ Lula ganha</span></span></div><div class="br-row"><span>1º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div><div class="br-row"><span>Augusto Cury</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Renan Santos</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Ronaldo Caiado</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Demais</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Voltam a votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Deixam de votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Trocam de voto</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row br-tot"><span>2º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div></div>
         </section>
         <div class="callout"><h4>Ponto de Virada</h4><p id="flip" class="flip-text"><b>Flávio vence por 2.224.965 votos.</b><br>Mantidas as demais premissas, Lula precisaria de <b>61,9% da 3ª via</b> (mesma fatia em todos os blocos, todos votando)<br>ou de <b>saldo líquido de 2.224.965 votos</b> a mais entre quem volta a votar.</p></div>
       </aside>
@@ -918,23 +956,33 @@
     </div>
 
     <section class="card flush" aria-labelledby="h-agenda">
-      <div class="card-head"><div><h3 id="h-agenda">Próximas Pesquisas e Debates</h3><p>Agenda até o 2º turno. Toda pesquisa precisa ser registrada no TSE 5 dias antes de sair: as próximas aparecem antes no <a href="https://pesqele-divulgacao.tse.jus.br/" target="_blank" rel="noopener">PesqEle (TSE)</a>.</p></div></div>
+      <div class="card-head"><div><h3 id="h-agenda">Próximas Pesquisas e Debates</h3><p>Agenda até o 2º turno, levantada em 14/10 ao meio-dia. Pesquisas só saem 5 dias depois de registradas no TSE; o link do TSE abre a busca do PesqEle, onde cada uma se encontra pelo número.</p></div></div>
       <div class="reel">
         <table class="tbl agenda">
-          <colgroup><col style="width:18%"><col><col style="width:34%"></colgroup>
-          <thead><tr><th scope="col">Data</th><th scope="col">Evento</th><th scope="col">Referência</th></tr></thead>
+          <colgroup><col style="width:12%"><col><col style="width:22%"><col style="width:18%"></colgroup>
+          <thead><tr><th scope="col">Data</th><th scope="col">Evento</th><th scope="col">Horário (Brasília)</th><th scope="col">Fonte</th></tr></thead>
           <tbody>
-            <tr><td>Qua 14/10</td><td>Pesquisa Quaest (campo 10–13/10, 2.154 entrevistas)</td><td>Quaest anterior (03/10) era de 1º turno</td></tr>
-            <tr><td>Qui 15/10</td><td>Pesquisa Datafolha (campo 13–15/10, 2.520 entrevistas); debate em pool (CNN, SBT, Metrópoles e outros) cancelado</td><td>Datafolha anterior (6–7/10): Flávio 52 x 48 dos válidos</td></tr>
-            <tr><td>Dom 18/10</td><td>Debate Band (20h ou 21h: fontes divergem)</td><td>-</td></tr>
-            <tr><td>Seg 19/10 a Qui 22/10</td><td>Novas rodadas de PoderData, AtlasIntel e Nexus (saem quase toda semana; datas não anunciadas)</td><td>Registro no TSE 5 dias antes da divulgação</td></tr>
-            <tr><td>Sex 23/10</td><td>Debate Globo, o último; fim do horário eleitoral</td><td>-</td></tr>
-            <tr><td>Sáb 24/10</td><td>Últimas pesquisas (Datafolha, Quaest e AtlasIntel costumam sair na véspera)</td><td>Registro exige 5 dias: prazo em 19/10</td></tr>
-            <tr class="total"><td>Dom 25/10</td><td>2º turno (urnas fecham às 17h)</td><td>-</td></tr>
+            <tr><td>Qua 14/10</td><td>Quaest, 2º turno (campo 10–13/10, 2.154 entrevistas; Globo)</td><td>A partir das 18h (imprensa)</td><td><a href="https://www.em.com.br/politica/2026/10/7520185-quaest-divulga-primeira-pesquisa-do-2-turno-entre-flavio-e-lula.html" target="_blank" rel="noopener">Estado de Minas</a></td></tr>
+            <tr><td>Qui 15/10</td><td>Datafolha (campo 13–15/10, 2.520 entrevistas; Folha)</td><td>Não divulgado; a rodada anterior saiu por volta das 18h45</td><td><a href="https://www.opovo.com.br/noticias/politica/eleicoes/2026/10/14/datafolha-e-quaest-divulgam-novas-pesquisas-sobre-2-turno-entre-lula-e-flavio.html" target="_blank" rel="noopener">O Povo</a></td></tr>
+            <tr><td>Qui 15/10</td><td>Debate do pool (CNN, SBT, Metrópoles e outros): cancelamento noticiado por uma fonte; o SBT diz que segue marcado</td><td>Não divulgado</td><td><a href="https://dcmais.com.br/eleicoes-2026/emissoras-de-tv-cancelam-debates-para-o-segundo-turno-confira-a-nova-programacao/" target="_blank" rel="noopener">DC Mais</a></td></tr>
+            <tr class="sub"><td>Qui 15/10</td><td>Palver (5.000, online) e Indexa (2.000, telefone; Agência Estado)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-08028 · BR-04629</a></td></tr>
+            <tr><td>Sex 16/10</td><td>PoderData (campo 13–15/10, 3.000)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-04258</a></td></tr>
+            <tr class="sub"><td>Sex 16/10</td><td>MDA/CNT (2.002) e 100% Cidades/Futura (2.000)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-00652 · BR-03764</a></td></tr>
+            <tr class="sub"><td>Sáb 17/10</td><td>Verita (15.554, URA) e Ipespe (1.500, telefone)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-01107 · BR-00223</a></td></tr>
+            <tr><td>Dom 18/10</td><td>Debate Band (com TV Gazeta, Cultura, Jovem Pan e Estadão)</td><td>20h</td><td><a href="https://www.band.com.br/politica/eleicoes/te-espero-no-debate-da-band-lula-diz-flavio-bolsonaro" target="_blank" rel="noopener">Band</a></td></tr>
+            <tr class="sub"><td>Dom 18/10</td><td>Vox Brasil (2.100, presencial) e Phoenix (3.999, telefone)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-04332 · BR-08809</a></td></tr>
+            <tr><td>Seg 19/10</td><td>AtlasIntel (campo 13–18/10, 5.000)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-02418</a></td></tr>
+            <tr><td>Seg 19/10</td><td>PoderData (campo 16–18/10, 3.000)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-02586</a></td></tr>
+            <tr><td>Seg 19/10</td><td>Nexus/BTG (campo 16–18/10, 2.000)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-04499</a></td></tr>
+            <tr class="sub"><td>Seg 19/10</td><td>Datatrends, 100% Cidades/Futura e Ranking</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">TSE BR-04454 · BR-06715 · BR-00152</a></td></tr>
+            <tr><td>Seg 19/10</td><td>Prazo final de registro para pesquisas que saiam até 24/10</td><td>-</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">PesqEle (TSE)</a></td></tr>
+            <tr><td>Sex 23/10</td><td>Debate TV Globo, o último (mediação de César Tralli)</td><td>Logo após o Jornal Nacional</td><td><a href="https://g1.globo.com/politica/eleicoes/2026/noticia/2026/10/07/eleicoes-2026-tv-globo-promove-entrevistas-e-debate-com-candidatos-a-presidencia-no-2o-turno.ghtml" target="_blank" rel="noopener">g1</a></td></tr>
+            <tr><td>Sáb 24/10</td><td>Últimas pesquisas (Datafolha, Quaest e AtlasIntel costumam sair na véspera)</td><td>Não divulgado</td><td><a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener">PesqEle (TSE)</a></td></tr>
+            <tr class="total"><td>Dom 25/10</td><td>2º turno</td><td>Urnas fecham às 17h</td><td>-</td></tr>
           </tbody>
         </table>
       </div>
-      <div class="card-foot"><span>Datas da agenda do material EWZ e 2º turno (imprensa, 06–13/10/2026); confirmar no PesqEle antes de cada divulgação</span></div>
+      <div class="card-foot"><span>Datas das pesquisas conferidas no PesqEle (TSE). Horários das emissoras e da imprensa; "não divulgado" quando nenhuma fonte informa. Linhas recuadas: institutos menores com amostra nacional.</span></div>
     </section>
 
     <section class="card flush" aria-labelledby="h-tv">
@@ -1012,7 +1060,7 @@ var MODEL = (function () {
   function defaults() {
     var tv = {};
     BLOCKS.forEach(function (b) { tv[b.k] = TV_PRESETS.base[b.k].slice(); });
-    return { tv: tv, ret: 0, retL: 50, out: 0, outL: 50 };
+    return { tv: tv, ret: 0, retL: 50, out: 0, outL: 50, fl: 0, lf: 0 };
   }
 
   function compute(st) {
@@ -1026,6 +1074,10 @@ var MODEL = (function () {
     L += rl - ol; F += rf - of;
     steps.push({ nm: 'Voltam a votar', d: rl - rf });
     steps.push({ nm: 'Deixam de votar', d: of - ol });
+    // A switcher leaves one finalist and joins the other: the margin moves by two votes each.
+    var fl = st.fl || 0, lf = st.lf || 0;
+    L += fl - lf; F += lf - fl;
+    steps.push({ nm: 'Trocam de voto', d: 2 * (fl - lf) });
     var abst = ABST + st.out - st.ret;
     // Flip point: one Lula share s for every 3rd-way block, all voting, other inputs fixed.
     var Lx = L - tvL, Fx = F - tvF, s = 0.5 + (Fx - Lx) / (2 * TV);
@@ -1060,7 +1112,7 @@ var MODEL = (function () {
       m: int(Math.abs(r.m)), m_p: win, m_c: pct(Math.abs(r.m) / r.val * 100, 2).replace('%', ' p.p.') + ' dos válidos entre os dois',
       a: int(r.abst), a_p: pct(r.abst / ELEIT * 100, 2), a_c: (dpp === 0 ? 'Igual ao 1º turno' : (dpp > 0 ? '+' : '') + pct(dpp, 2).replace('%', ' p.p.') + ' vs. 1º turno (' + sint(r.abst - ABST) + ')'),
       tv_l: int(r.tvL), tv_f: int(r.tvF), tv_n: int(TV - r.tvL - r.tvF),
-      ret_o: mi(st.ret), out_o: mi(st.out), bridge: bridge, flip: flip
+      ret_o: mi(st.ret), out_o: mi(st.out), fl_o: mi(st.fl || 0), lf_o: mi(st.lf || 0), bridge: bridge, flip: flip
     };
   }
 
@@ -1090,6 +1142,7 @@ if (typeof module !== 'undefined') module.exports = MODEL;
   var $ = function (id) { return document.getElementById(id); };
   var rows = Array.prototype.slice.call(document.querySelectorAll('#tv [data-k]'));
   var S = { ret: $('ret'), retl: $('retl'), out: $('out'), outl: $('outl') };
+  var W = { fl: $('fl'), lf: $('lf') };
   var clamp = function (v) { v = Math.round(+v); return isFinite(v) ? Math.min(100, Math.max(0, v)) : 0; };
   var segTv = document.querySelector('[data-tv]').parentElement;
   var segAb = document.querySelector('[data-ab]').parentElement;
@@ -1105,6 +1158,7 @@ if (typeof module !== 'undefined') module.exports = MODEL;
       r.querySelector('[data-s="n"]').textContent = String(100 - lv - fv);
     });
     st.ret = +S.ret.value; st.retL = +S.retl.value; st.out = +S.out.value; st.outL = +S.outl.value;
+    st.fl = +W.fl.value; st.lf = +W.lf.value;
     return st;
   }
 
@@ -1115,7 +1169,7 @@ if (typeof module !== 'undefined') module.exports = MODEL;
     $('k-f-p').className = v.f_pct_class; $('k-l-p').className = v.l_pct_class;
     $('k-m-c').textContent = v.m_c; $('k-a-c').textContent = v.a_c;
     $('tv-l').textContent = v.tv_l; $('tv-f').textContent = v.tv_f; $('tv-n').textContent = v.tv_n;
-    $('ret-out').value = v.ret_o; $('out-out').value = v.out_o;
+    $('ret-out').value = v.ret_o; $('out-out').value = v.out_o; $('fl-out').value = v.fl_o; $('lf-out').value = v.lf_o;
     $('retl-out').value = S.retl.value + '%'; $('outl-out').value = S.outl.value + '%';
     var br = $('bridge'); br.innerHTML = br.firstElementChild.outerHTML + v.bridge;
     $('flip').innerHTML = v.flip;
@@ -1144,6 +1198,7 @@ if (typeof module !== 'undefined') module.exports = MODEL;
     i.addEventListener('input', function () { press(segTv, null); update(); });
   }); });
   Object.keys(S).forEach(function (k) { S[k].addEventListener('input', function () { press(segAb, null); update(); }); });
+  Object.keys(W).forEach(function (k) { W[k].addEventListener('input', update); });
   document.querySelectorAll('[data-step]').forEach(function (b) {
     b.addEventListener('click', function () {
       var input = $(b.dataset.target);
