@@ -479,6 +479,11 @@
 }
 
 @layer section {
+  .step-btn { flex: 0 0 auto; width: var(--s-12); padding: 0; justify-content: center; }
+  .touch-range:focus-visible { outline: none; }
+  .touch-range:focus-visible::-webkit-slider-thumb { outline: var(--ring); outline-offset: var(--s-1); }
+  .touch-range:focus-visible::-moz-range-thumb { outline: var(--ring); outline-offset: var(--s-1); }
+  .voter-readout label { color: var(--muted); }
   .percent-input { -moz-appearance: textfield; appearance: textfield; }
   .percent-input::-webkit-inner-spin-button, .percent-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   .gov-matrix th, .gov-matrix td { padding-left: var(--s-1); padding-right: var(--s-1); }
@@ -507,12 +512,13 @@
   }
   .tbl.agenda td, .tbl.agenda th { white-space: normal; }
   body { background: var(--canvas); }
-  .election-frame { margin: var(--s-6) var(--s-12); min-height: 100%; min-height: calc(100svh - var(--s-12)); min-height: calc(100dvh - var(--s-12)); }
+  .election-frame { max-width: calc(var(--s-12) * 27); margin: var(--s-6) auto; min-height: 100%; min-height: calc(100svh - var(--s-12)); min-height: calc(100dvh - var(--s-12)); }
   .election-header { position: static; }
   .election-content { max-width: none; }
-  .sim-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-6); align-items: start; }
+  .sim-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-6); align-items: stretch; }
   .sim-layout > * { min-width: 0; }
-  .results { display: grid; gap: var(--s-4); }
+  .results { display: flex; flex-direction: column; gap: var(--s-4); }
+  .results > :nth-child(2) { flex: 1; }
   .result-list { font-variant-numeric: tabular-nums; }
   .result-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); padding-top: var(--s-3); margin-top: var(--s-3); border-top: 1px solid var(--line); }
   .result-pair:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
@@ -766,17 +772,17 @@
           </div>
           <div class="voter-controls">
             <section class="flow" aria-label="Voltam a Votar">
-              <div class="flow-head"><h4>Voltam a Votar</h4><span class="hint">Abstiveram-se no 1º turno e votam em Lula ou Flávio; até 10 milhões</span></div>
+              <div class="flow-head"><h4>Voltam a Votar</h4><span class="hint">Abstiveram-se no 1º turno e votam em Lula ou Flávio (até 10 milhões). O % vai para Lula; o resto, para Flávio. − e + andam 250.000 eleitores ou 5 pontos.</span></div>
               <div class="flow-grid">
-                <div class="field voter-field"><div class="out voter-readout"><label for="ret">Quantos</label><output id="ret-out" for="ret">0,00 mi (0)</output></div><div class="slide-row"><button class="btn ghost touch-button js-only" type="button" data-step="-250000" data-target="ret" aria-label="Diminuir 250.000 eleitores">−</button><input id="ret" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><button class="btn ghost touch-button js-only" type="button" data-step="250000" data-target="ret" aria-label="Somar 250.000 eleitores">+</button></div><span class="hint js-hint">− e + andam 250.000 eleitores</span></div>
-                <div class="field voter-field"><div class="out voter-readout"><label for="retl">Desses, % Lula</label><output id="retl-out" for="retl">50%</output></div><div class="slide-row"><input id="retl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"></div><span class="hint">O resto vai para Flávio</span></div>
+                <div class="field voter-field"><div class="out voter-readout"><label for="ret">Eleitores</label><output id="ret-out" for="ret">0,00 mi (0)</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-250000" data-target="ret" aria-label="Diminuir 250.000 eleitores">−</button><input id="ret" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><button class="btn touch-button step-btn js-only" type="button" data-step="250000" data-target="ret" aria-label="Somar 250.000 eleitores">+</button></div></div>
+                <div class="field voter-field"><div class="out voter-readout"><label for="retl">Desses, % Lula</label><output id="retl-out" for="retl">50%</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-5" data-target="retl" aria-label="Diminuir 5 pontos">−</button><input id="retl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"><button class="btn touch-button step-btn js-only" type="button" data-step="5" data-target="retl" aria-label="Somar 5 pontos">+</button></div></div>
               </div>
             </section>
             <section class="flow" aria-label="Deixam de Votar">
-              <div class="flow-head"><h4>Deixam de Votar</h4><span class="hint">Votaram em Lula ou Flávio no 1º turno e se abstêm no 2º; até 10 milhões</span></div>
+              <div class="flow-head"><h4>Deixam de Votar</h4><span class="hint">Votaram em Lula ou Flávio no 1º turno e se abstêm no 2º (até 10 milhões). O % era de Lula; o resto, de Flávio.</span></div>
               <div class="flow-grid">
-                <div class="field voter-field"><div class="out voter-readout"><label for="out">Quantos</label><output id="out-out" for="out">0,00 mi (0)</output></div><div class="slide-row"><button class="btn ghost touch-button js-only" type="button" data-step="-250000" data-target="out" aria-label="Diminuir 250.000 eleitores">−</button><input id="out" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><button class="btn ghost touch-button js-only" type="button" data-step="250000" data-target="out" aria-label="Somar 250.000 eleitores">+</button></div><span class="hint js-hint">− e + andam 250.000 eleitores</span></div>
-                <div class="field voter-field"><div class="out voter-readout"><label for="outl">Desses, % que era de Lula</label><output id="outl-out" for="outl">50%</output></div><div class="slide-row"><input id="outl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"></div><span class="hint">O resto era de Flávio</span></div>
+                <div class="field voter-field"><div class="out voter-readout"><label for="out">Eleitores</label><output id="out-out" for="out">0,00 mi (0)</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-250000" data-target="out" aria-label="Diminuir 250.000 eleitores">−</button><input id="out" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><button class="btn touch-button step-btn js-only" type="button" data-step="250000" data-target="out" aria-label="Somar 250.000 eleitores">+</button></div></div>
+                <div class="field voter-field"><div class="out voter-readout"><label for="outl">Desses, % que era de Lula</label><output id="outl-out" for="outl">50%</output></div><div class="slide-row"><button class="btn touch-button step-btn js-only" type="button" data-step="-5" data-target="outl" aria-label="Diminuir 5 pontos">−</button><input id="outl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"><button class="btn touch-button step-btn js-only" type="button" data-step="5" data-target="outl" aria-label="Somar 5 pontos">+</button></div></div>
               </div>
             </section>
           </div>
