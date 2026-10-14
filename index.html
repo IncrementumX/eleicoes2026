@@ -825,6 +825,43 @@
   @media (max-width: 640px) { .percent-input { width: 100%; height: var(--s-12); font-size: var(--fs-16); } .step-btn { width: var(--s-12); height: var(--s-12); min-height: var(--s-12); } .gfull { padding: var(--s-2); } }
   @media print { .gfull, .gfull-open { display: none; } }
 }
+@layer section {
+  .bloc-head, .bloc-row { grid-template-columns: minmax(0, 1fr) calc(var(--s-12) * 2) calc(var(--s-12) * 2 + var(--s-4)) calc(var(--s-12) * 2 + var(--s-4)) calc(var(--s-12) * 2); }
+  .bloc-head > span { white-space: nowrap; }
+  /* history table: abstention and p.p. carry the reading */
+  .abstention-table tbody td:nth-child(3), .abstention-table tbody td:nth-child(5) { font-weight: 600; }
+  .abstention-table tbody td:nth-child(8) { font-weight: 600; background: var(--wash); }
+  .abstention-table thead tr:last-child th:nth-child(1), .abstention-table thead tr:last-child th:nth-child(3) { color: var(--accent); }
+  .abstention-table thead tr:last-child th:nth-child(6) { color: var(--accent); background: var(--wash); }
+  /* % fields: shadcn-style number field, [−] value [+]; arrows of the browser hidden */
+  .numf { display: inline-grid; grid-template-columns: var(--s-8) calc(var(--s-8) + var(--s-3)) var(--s-8); height: var(--s-8); border: 1px solid var(--strong); border-radius: var(--r-6); overflow: hidden; background: var(--surface); }
+  html:not(.js) .numf { grid-template-columns: calc(var(--s-8) + var(--s-3)); }
+  .numf .percent-input { width: 100%; height: 100%; min-height: 0; padding: 0; border: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); border-radius: 0; box-shadow: none; text-align: center; font-size: var(--fs-14); -moz-appearance: textfield; appearance: textfield; }
+  .numf .percent-input::-webkit-inner-spin-button, .numf .percent-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .numf .percent-input:focus-visible { outline: none; background: var(--wash); }
+  .numf:focus-within { border-color: var(--accent); }
+  .nf-b { display: flex; align-items: center; justify-content: center; padding: 0; border: 0; background: var(--surface); color: var(--deep); font-size: var(--fs-16); cursor: pointer; }
+  .nf-b:hover { background: var(--fill); color: var(--ink); }
+  .bloc-row .bloc-cell:nth-of-type(3), .bloc-row .bloc-cell:nth-of-type(4) { display: flex; justify-content: flex-end; }
+  @media (max-width: 640px) {
+    .bloc-head { display: none; }
+    .bloc-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-2) var(--s-3); padding: var(--s-3) 0; }
+    .bloc-name { grid-column: 1; grid-row: 1; }
+    .bloc-number { grid-column: 2; grid-row: 1; text-align: right; color: var(--muted); font-size: var(--fs-12); }
+    .bloc-row .bloc-cell:nth-of-type(3) { grid-column: 1; grid-row: 2; display: grid; gap: var(--s-1); }
+    .bloc-row .bloc-cell:nth-of-type(4) { grid-column: 2; grid-row: 2; display: grid; gap: var(--s-1); }
+    .bloc-row .bloc-cell:nth-of-type(5) { display: none; }
+    .bloc-row .bloc-cell label { display: block; color: var(--muted); font-size: var(--fs-12); text-align: left; }
+    .numf { display: grid; width: 100%; height: var(--s-12); grid-template-columns: var(--s-12) minmax(0, 1fr) var(--s-12); }
+    .numf .percent-input { font-size: var(--fs-16); }
+    .nf-b { font-size: var(--fs-16); }
+    .bloc-total { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-1) var(--s-3); }
+    .bloc-total .bloc-name { grid-column: 1; grid-row: 1; }
+    .bloc-total .bloc-number { grid-column: 2; grid-row: 1; text-align: right; color: var(--ink); font-size: var(--fs-14); }
+    .bloc-total .bloc-cell:nth-of-type(3), .bloc-total .bloc-cell:nth-of-type(4), .bloc-total .bloc-cell:nth-of-type(5) { grid-column: 1 / -1; grid-row: auto; display: flex; justify-content: space-between; }
+    .bloc-total .mobile-label { display: inline; color: var(--muted); font-size: var(--fs-12); }
+  }
+}
 </style>
 </head>
 <body>
@@ -866,23 +903,23 @@
               <button class="touch-button" type="button" aria-pressed="false" data-tv="quaest">Quaest 03/10</button>
             </div><button class="btn ghost touch-button" id="reset-tv" type="button"><svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg>Voltar ao 50-50</button>
           </div>
-          <div id="tv"><div class="bloc-head"><span>Bloco</span><span>Votos 1º Turno</span><span>Lula %</span><span>Flávio %</span><span><span class="wide-only">Branco/<wbr>Nulo %</span><span class="narrow-only">Br/Nulo</span></span></div>
+          <div id="tv"><div class="bloc-head"><span>Bloco</span><span>Votos 1º Turno</span><span>Lula %</span><span>Flávio %</span><span><span class="wide-only">Branco/Nulo %</span><span class="narrow-only">Br/Nulo</span></span></div>
 <div class="bloc-row" data-k="cury"><div class="bloc-name">Augusto Cury</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>3.448.569</div>
-<div class="bloc-cell"><label for="cury-l">Lula %</label><input id="cury-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Augusto Cury, % Lula" disabled></div>
-<div class="bloc-cell"><label for="cury-f">Flávio %</label><input id="cury-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Augusto Cury, % Flávio" disabled></div>
+<div class="bloc-cell"><label for="cury-l">Lula %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="cury-l" aria-label="Lula: menos 5 pontos">−</button><input id="cury-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Augusto Cury, % Lula" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="cury-l" aria-label="Lula: mais 5 pontos">+</button></span></div>
+<div class="bloc-cell"><label for="cury-f">Flávio %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="cury-f" aria-label="Flávio: menos 5 pontos">−</button><input id="cury-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Augusto Cury, % Flávio" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="cury-f" aria-label="Flávio: mais 5 pontos">+</button></span></div>
 <div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
 <div class="bloc-row" data-k="renan"><div class="bloc-name">Renan Santos</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>2.675.887</div>
-<div class="bloc-cell"><label for="renan-l">Lula %</label><input id="renan-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Renan Santos, % Lula" disabled></div>
-<div class="bloc-cell"><label for="renan-f">Flávio %</label><input id="renan-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Renan Santos, % Flávio" disabled></div>
+<div class="bloc-cell"><label for="renan-l">Lula %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="renan-l" aria-label="Lula: menos 5 pontos">−</button><input id="renan-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Renan Santos, % Lula" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="renan-l" aria-label="Lula: mais 5 pontos">+</button></span></div>
+<div class="bloc-cell"><label for="renan-f">Flávio %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="renan-f" aria-label="Flávio: menos 5 pontos">−</button><input id="renan-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Renan Santos, % Flávio" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="renan-f" aria-label="Flávio: mais 5 pontos">+</button></span></div>
 <div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
 <div class="bloc-row" data-k="caiado"><div class="bloc-name">Ronaldo Caiado</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>2.605.148</div>
-<div class="bloc-cell"><label for="caiado-l">Lula %</label><input id="caiado-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Ronaldo Caiado, % Lula" disabled></div>
-<div class="bloc-cell"><label for="caiado-f">Flávio %</label><input id="caiado-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Ronaldo Caiado, % Flávio" disabled></div>
+<div class="bloc-cell"><label for="caiado-l">Lula %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="caiado-l" aria-label="Lula: menos 5 pontos">−</button><input id="caiado-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Ronaldo Caiado, % Lula" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="caiado-l" aria-label="Lula: mais 5 pontos">+</button></span></div>
+<div class="bloc-cell"><label for="caiado-f">Flávio %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="caiado-f" aria-label="Flávio: menos 5 pontos">−</button><input id="caiado-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Ronaldo Caiado, % Flávio" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="caiado-f" aria-label="Flávio: mais 5 pontos">+</button></span></div>
 <div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
 <input class="visually-hidden" type="checkbox" id="demais-toggle" aria-label="Expandir Demais (7)" aria-controls="demais-children">
 <div class="bloc-row" data-k="demais"><div class="bloc-name"><label class="bloc-toggle" for="demais-toggle"><svg class="chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 2 4 4-4 4"/></svg>Demais (7)</label></div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>587.143</div>
-<div class="bloc-cell"><label for="demais-l">Lula %</label><input id="demais-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Demais (7), % Lula" disabled></div>
-<div class="bloc-cell"><label for="demais-f">Flávio %</label><input id="demais-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Demais (7), % Flávio" disabled></div>
+<div class="bloc-cell"><label for="demais-l">Lula %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="demais-l" aria-label="Lula: menos 5 pontos">−</button><input id="demais-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Demais (7), % Lula" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="demais-l" aria-label="Lula: mais 5 pontos">+</button></span></div>
+<div class="bloc-cell"><label for="demais-f">Flávio %</label><span class="numf"><button class="nf-b js-only" type="button" data-pstep="-5" data-target="demais-f" aria-label="Flávio: menos 5 pontos">−</button><input id="demais-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Demais (7), % Flávio" disabled><button class="nf-b js-only" type="button" data-pstep="5" data-target="demais-f" aria-label="Flávio: mais 5 pontos">+</button></span></div>
 <div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
 <dl class="bloc-children" id="demais-children"><div class="child-row"><dt>Romeu Zema</dt><dd>326.488</dd></div><div class="child-row"><dt>Samara Martins</dt><dd>122.911</dd></div><div class="child-row"><dt>Hertz Dias</dt><dd>43.103</dd></div><div class="child-row"><dt>Clariana Barão</dt><dd>40.043</dd></div><div class="child-row"><dt>Edmilson Costa</dt><dd>22.693</dd></div><div class="child-row"><dt>Wilson Grassi</dt><dd>16.881</dd></div><div class="child-row"><dt>Rui Costa Pimenta</dt><dd>15.024</dd></div></dl>
 <div class="bloc-head bloc-total"><span class="bloc-name">Total 3ª via</span><span class="bloc-number">9.316.747</span><span class="bloc-cell"><span class="mobile-label">Lula</span><span id="tv-l">4.658.374</span></span><span class="bloc-cell"><span class="mobile-label">Flávio</span><span id="tv-f">4.658.374</span></span><span class="bloc-cell"><span class="mobile-label">Branco/Nulo</span><span id="tv-n">0</span></span></div>
@@ -1297,6 +1334,14 @@ if (typeof module !== 'undefined') module.exports = MODEL;
   }); });
   Object.keys(S).forEach(function (k) { S[k].addEventListener('input', function () { press(segAb, null); update(); }); });
   Object.keys(W).forEach(function (k) { W[k].addEventListener('input', update); });
+  // % steppers: move by 5 and reuse the field's own input handler (cap at 100, other field gives way)
+  document.querySelectorAll('[data-pstep]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var i = $(b.dataset.target);
+      i.value = Math.min(100, Math.max(0, (+i.value || 0) + +b.dataset.pstep));
+      i.dispatchEvent(new Event('input'));
+    });
+  });
   document.querySelectorAll('[data-step]').forEach(function (b) {
     b.addEventListener('click', function () {
       var input = $(b.dataset.target);
