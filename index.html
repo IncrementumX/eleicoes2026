@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lula x Flávio: O Que Falta Para Virar — Incrementum</title>
+<style>
+/* ============================================================================
+   incrementum.css — the house component vocabulary for HTML material. v2.
+
+   Anatomy is copied from shadcn/ui (sidebar, inset shell, card, table, tabs,
+   button, badge) and Tremor Blocks (kpi-card, table-01, page-shell-01,
+   chart-composition-01, bar list). Identity is DESIGN.md:
+   Segoe UI and the blue ramp. Nothing else was invented.
+
+   Scale, and nothing off it:
+     space  4 · 8 · 12 · 16 · 24 · 32 · 48
+     type   12 · 14 · 16 · 18 · 24 · 30      (line 16 · 20 · 24 · 28 · 32 · 36)
+     radius 12 inset panel and sheet corner · 8 card and nav item · 6 control and badge
+     ink    ink for content, muted for apparatus; accent once, and only once per region
+     border one colour (line); strong only on controls
+     shadow 1 px under a card and a control; a float under a tooltip; nothing else
+     motion 150 ms ease on colour and background; nothing moves
+     states hover · focus-visible ring · on/aria-current/aria-selected/aria-pressed · disabled at .5 · aria-invalid in neg
+
+   Layers: tokens · base · layout · components · section (the artifact's own).
+   Unlayered CSS beats every layer, so an artifact keeps its CSS in @layer section.
+
+   Genres: document = .sheet (A4 paper, margins of paper, prints as pages);
+           dashboard = .shell with .sidebar + .inset (fluid, one viewport at a time);
+           case = either surface plus exhibit and tooltip.
+   ========================================================================= */
+
+@layer tokens, base, layout, components, section;
+
+/* ---------------------------------------------------------------- tokens -- */
+@layer tokens {
+  :root {
+    /* One house palette, the one the Dashboard application already uses (Dashboard/ui/styles/tokens.css).
+       Blue ramp for data: navy -> accent -> mid -> light -> wash. Deep, muted and faint are text roles. */
+    --navy: #122A3F; --accent: #1D55B8; --mid: #4A7FD2; --light: #A1C2E9; --wash: #EEF2F6;
+    --surface: #FFFFFF; --canvas: #EDF1F5; --fill: #F1F4F8; --line: #DFE5EC; --hair: #ECF0F5; --strong: #C4CDDA;
+    --ink: #131C26; --deep: #3D4855; --muted: #66717F; --faint: #66717F;  /* one apparatus grey: muted is the floor at 4.5:1 */
+    --pos: #0F6B3F; --neg: #B21F30;
+    --sev: #F0E4A6; --sev-b: #D9C36A; --sev-i: #7D5400;
+
+    --font: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    --fs-12: 12px; --fs-14: 14px; --fs-16: 16px; --fs-18: 18px; --fs-24: 24px; --fs-30: 30px;
+
+    --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-6: 24px; --s-8: 32px; --s-12: 48px;
+
+    --r-12: 12px; --r-8: 8px; --r-6: 6px;
+
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, .05);
+    --shadow-float: 0 8px 24px -8px rgba(18, 42, 63, .24), 0 2px 4px rgba(18, 42, 63, .06);
+    --shadow-paper: 0 1px 2px rgba(18, 42, 63, .06), 0 14px 36px -10px rgba(18, 42, 63, .18);
+
+    --t: 150ms ease;
+    --ring: 2px solid var(--accent);
+
+    --sidebar-w: 256px;   /* shadcn SIDEBAR_WIDTH 16rem */
+    --header-h: 64px;     /* shadcn-fintech dashboard header h-16 */
+    --content-max: 1280px;
+    --sheet-w: 210mm;
+  }
+}
+
+/* ------------------------------------------------------------------ base -- */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--fill); color: var(--ink); font-family: var(--font); font-size: var(--fs-14); line-height: 20px; font-variant-numeric: tabular-nums; }
+  h1, h2, h3, h4, p, ul, ol, dl, dd, figure, table, blockquote { margin: 0; }
+  h1 { font-size: var(--fs-24); line-height: 32px; font-weight: 600; }
+  h2 { font-size: var(--fs-18); line-height: 28px; font-weight: 600; }
+  h3 { font-size: var(--fs-16); line-height: 24px; font-weight: 600; }
+  h4 { font-size: var(--fs-14); line-height: 20px; font-weight: 600; }
+  a { color: var(--accent); }
+  strong, b { font-weight: 600; }
+  small { font-size: var(--fs-12); line-height: 16px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  svg { display: block; max-width: 100%; height: auto; }
+  img { max-width: 100%; height: auto; }
+  [id] { scroll-margin-top: calc(var(--header-h) + var(--s-2)); }
+  :focus-visible { outline: var(--ring); outline-offset: 2px; border-radius: var(--r-6); }
+  ul, ol { padding-left: 20px; }
+  .muted { color: var(--muted); }
+  .num { text-align: right; white-space: nowrap; }
+  .pos { color: var(--pos); }
+  .neg { color: var(--neg); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; } }
+  @page { size: A4 portrait; margin: 0; }
+}
+
+/* ---------------------------------------------------------------- layout -- */
+/* Primitives own spacing; components carry no outer margin. */
+@layer layout {
+  .stack { display: flex; flex-direction: column; gap: var(--gap, var(--s-6)); }
+  .stack-2 { --gap: var(--s-2); } .stack-4 { --gap: var(--s-4); } .stack-8 { --gap: var(--s-8); }
+  .cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gap, var(--s-2)); }
+  .between { justify-content: space-between; }
+  .spacer { flex: 1; }
+  .grid { display: grid; gap: var(--gap, var(--s-6)); grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--min, 280px)), 1fr)); }
+  .grid > * { min-width: 0; }
+  .cols { display: grid; gap: var(--gap, var(--s-6)); align-items: stretch; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .cols > * { min-width: 0; grid-column: span 12; }
+  .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; }
+  .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; } .span-8 { grid-column: span 8; } .span-9 { grid-column: span 9; }
+  .reel { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+
+  /* shell: sidebar + inset main (shadcn variant="inset") */
+  .shell { display: flex; min-height: 100vh; background: var(--fill); }
+  .sidebar { position: sticky; top: 0; flex: 0 0 var(--sidebar-w); width: var(--sidebar-w); height: 100vh; display: flex; flex-direction: column; gap: var(--s-2); padding: var(--s-2); background: var(--fill); }
+  .inset { flex: 1; min-width: 0; display: flex; flex-direction: column; margin: var(--s-2) var(--s-2) var(--s-2) 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-12); box-shadow: var(--shadow-1); }
+  .header { position: sticky; top: var(--s-2); z-index: 10; display: flex; align-items: center; gap: var(--s-2); height: var(--header-h); padding: 0 var(--s-6); border-bottom: 1px solid var(--line); background: var(--surface); border-radius: var(--r-12) var(--r-12) 0 0; }
+  .content { flex: 1; width: 100%; max-width: var(--content-max); margin: 0 auto; padding: var(--s-6); display: flex; flex-direction: column; gap: var(--s-6); }
+
+  /* document surface: A4 paper on screen, margins of paper */
+  .sheets { display: flex; flex-direction: column; align-items: center; gap: var(--s-6); padding: var(--s-8) var(--s-4); background: var(--canvas); }
+  .sheet { position: relative; width: var(--sheet-w); max-width: 100%; min-height: 297mm; padding: 16mm 18mm 14mm; display: flex; flex-direction: column; background: var(--surface); box-shadow: var(--shadow-paper); }
+  .sheet > .body { flex: 1 0 auto; }
+
+  @media (max-width: 1024px) {
+    .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-9 { grid-column: span 12; }
+    .shell { display: block; }
+    /* the sidebar strip (row, folded groups) is declared in the components layer, which owns .group and .brand */
+    .sidebar { position: static; width: auto; height: auto; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: var(--s-1); overflow-x: auto; scrollbar-width: none; }
+    .sidebar::-webkit-scrollbar { display: none; }
+    .inset { margin: 0; border-radius: 0; border: 0; box-shadow: none; }
+    .header { top: 0; border-radius: 0; flex-wrap: wrap; height: auto; min-height: var(--header-h); padding: var(--s-2) var(--s-4); }
+  }
+  @media (max-width: 640px) {
+    .content { padding: var(--s-4); gap: var(--s-4); }
+    .sheets { padding: 0; gap: 0; }
+    .sheet { width: 100%; min-height: 0; padding: var(--s-6) var(--s-4); box-shadow: none; border-bottom: 1px solid var(--line); }
+  }
+}
+
+/* ------------------------------------------------------------ components -- */
+@layer components {
+
+  /* ---- sidebar navigation (shadcn): brand tile, groups with a label, 32 px items */
+  .brand { display: flex; align-items: center; gap: var(--s-2); height: var(--header-h); padding: 0 var(--s-2); }
+  .brand .tile { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--r-8); background: var(--navy); color: var(--surface); font-size: var(--fs-14); font-weight: 600; }
+  .brand .name { display: grid; line-height: 16px; }
+  .brand .name b { font-size: var(--fs-14); font-weight: 600; }
+  .brand .name span { font-size: var(--fs-12); color: var(--muted); }
+  .group { display: flex; flex-direction: column; gap: 0; padding: var(--s-2) 0; }
+  .group-label { display: flex; align-items: center; height: 32px; padding: 0 var(--s-2); color: var(--muted); font-size: var(--fs-12); font-weight: 500; }
+  .nav-item { display: flex; align-items: center; gap: var(--s-2); height: 32px; padding: 0 var(--s-2); border-radius: var(--r-8); color: var(--ink); font-size: var(--fs-14); text-decoration: none; white-space: nowrap; transition: background var(--t), color var(--t); }
+  .nav-item:hover { background: var(--wash); }
+  .nav-item.on, .nav-item[aria-current="page"] { background: var(--wash); font-weight: 500; }
+  .nav-item .count { margin-left: auto; color: var(--muted); font-size: var(--fs-12); }
+  .nav-item .ico { width: 16px; height: 16px; border-radius: 4px; background: var(--strong); flex: 0 0 auto; }
+  .nav-sub { display: flex; flex-direction: column; gap: var(--s-1); margin: 0 14px; padding: 2px 10px; border-left: 1px solid var(--line); }
+  .nav-sub .nav-item { height: 28px; }
+  .sidebar .foot { margin-top: auto; }
+  .header .crumbs { display: flex; align-items: center; gap: var(--s-2); color: var(--muted); }
+  .header .crumbs b { color: var(--ink); font-weight: 400; }
+  .header .sep { width: 1px; height: 16px; background: var(--line); margin: 0 var(--s-2); }
+
+  /* ---- page head (Tremor page-shell): title 18/600, description, actions right */
+  .page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-4); }
+  .page-head h1 { font-size: var(--fs-18); line-height: 28px; }
+  .page-head p { margin-top: var(--s-1); color: var(--muted); }
+  .actions { display: flex; align-items: center; gap: var(--s-2); }
+
+  /* ---- tabs: line (Tremor) and solid (segmented) */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+  .tabs > * { margin-bottom: -1px; padding: 0 var(--s-3) var(--s-2); border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font-weight: 500; text-decoration: none; cursor: pointer; white-space: nowrap; transition: color var(--t), border-color var(--t); }
+  .tabs > *:hover { color: var(--deep); border-bottom-color: var(--strong); }
+  .tabs > .on, .tabs > [aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .seg { display: inline-flex; padding: 4px; gap: 2px; border-radius: var(--r-6); background: var(--fill); }
+  .seg > * { padding: 4px var(--s-3); border: 0; border-radius: 4px; background: none; color: var(--muted); font-weight: 500; cursor: pointer; transition: background var(--t), color var(--t); }
+  .seg > *:hover { color: var(--deep); }
+  .seg > .on, .seg > [aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1); }
+  .seg > *:disabled { opacity: .5; cursor: not-allowed; }
+
+  /* ---- tabset: tabs that switch panels with CSS alone (radio + label + :checked), so a shared file
+     works in iOS Quick Look, an in-app browser and with JavaScript off. Up to six tabs; print shows every panel. */
+  .tabset { display: flex; flex-direction: column; gap: var(--s-6); }
+  .tabset > input[type="radio"] { position: absolute; opacity: 0; width: 1px; height: 1px; margin: -1px; }
+  .tabset > .tabs > label { display: inline-block; }
+  .tabset > .panels > * { display: none; }
+  .tabset > input:nth-of-type(1):checked ~ .panels > :nth-child(1), .tabset > input:nth-of-type(2):checked ~ .panels > :nth-child(2), .tabset > input:nth-of-type(3):checked ~ .panels > :nth-child(3), .tabset > input:nth-of-type(4):checked ~ .panels > :nth-child(4), .tabset > input:nth-of-type(5):checked ~ .panels > :nth-child(5), .tabset > input:nth-of-type(6):checked ~ .panels > :nth-child(6) { display: block; }
+  .tabset > input:nth-of-type(1):checked ~ .tabs > label:nth-of-type(1), .tabset > input:nth-of-type(2):checked ~ .tabs > label:nth-of-type(2), .tabset > input:nth-of-type(3):checked ~ .tabs > label:nth-of-type(3), .tabset > input:nth-of-type(4):checked ~ .tabs > label:nth-of-type(4), .tabset > input:nth-of-type(5):checked ~ .tabs > label:nth-of-type(5), .tabset > input:nth-of-type(6):checked ~ .tabs > label:nth-of-type(6) { color: var(--accent); border-bottom-color: var(--accent); }
+  .tabset > input:nth-of-type(1):focus-visible ~ .tabs > label:nth-of-type(1), .tabset > input:nth-of-type(2):focus-visible ~ .tabs > label:nth-of-type(2), .tabset > input:nth-of-type(3):focus-visible ~ .tabs > label:nth-of-type(3), .tabset > input:nth-of-type(4):focus-visible ~ .tabs > label:nth-of-type(4), .tabset > input:nth-of-type(5):focus-visible ~ .tabs > label:nth-of-type(5), .tabset > input:nth-of-type(6):focus-visible ~ .tabs > label:nth-of-type(6) { outline: var(--ring); outline-offset: 2px; border-radius: var(--r-6); }
+
+  /* ---- card (Tremor): radius 8, border, padding 24, 1 px shadow */
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-8); padding: var(--s-6); box-shadow: var(--shadow-1); min-width: 0; }
+  .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--s-4); }
+  .card-head.center { align-items: center; }
+  .card-head h3 { font-size: var(--fs-16); line-height: 24px; }
+  .card-head p, .card > .desc { margin-top: var(--s-1); line-height: 24px; color: var(--muted); }
+  .card > .card-head + * { margin-top: var(--s-6); }
+  .card.flush { padding: 0; }
+  .card.flush > .card-head { padding: var(--s-4) var(--s-6); border-bottom: 1px solid var(--line); }
+  .card.flush > .card-foot { padding: var(--s-4) var(--s-6); border-top: 1px solid var(--line); }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); color: var(--muted); }
+
+  /* ---- kpi (Tremor kpi-card-01/05): label 14/500 muted; value 30/600; change 14/500 */
+  /* A KPI row goes four across, then two, then one — never three with a card floating alone.
+     --wide is negative while the row is at least 980 px, so the minimum track is 200 px and four fit;
+     below that it flips to 46%, which only two tracks can satisfy. No media query, no third breakpoint. */
+  .kpis { --wide: calc((820px - 100%) * 999); grid-template-columns: repeat(auto-fit, minmax(clamp(170px, var(--wide), 46%), 1fr)); }
+  .card.kpi { padding: var(--s-4); }  /* a readout is compact: 16 of padding, value at 24, one caption */
+  .kpi .label { display: block; color: var(--muted); font-size: var(--fs-12); line-height: 16px; font-weight: 500; }
+  .kpi .top { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); }
+  .kpi .row { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s-2); margin-top: var(--s-1); }
+  .kpi .value { font-size: var(--fs-24); line-height: 32px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .kpi .change { font-weight: 500; }
+  .kpi .from { color: var(--muted); }
+  .kpi .caption { margin-top: var(--s-1); color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+
+  /* ---- table (Tremor Table + shadcn data-table): head px-4 py-3.5 14/600; cells p-4; first column 500 ink */
+  .tbl { width: 100%; border-collapse: collapse; white-space: nowrap; }
+  .tbl th { padding: var(--s-3) var(--s-4); text-align: left; font-weight: 600; color: var(--ink); border-bottom: 1px solid var(--line); vertical-align: bottom; }
+  .tbl td { padding: var(--s-3) var(--s-4); color: var(--ink); border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .tbl tbody tr:last-child td { border-bottom: 0; }
+  .tbl td:first-child { font-weight: 500; color: var(--ink); }
+  .tbl td:first-child small { display: block; font-weight: 400; color: var(--muted); }
+  .tbl .num { text-align: right; }
+  .tbl .ctr { text-align: center; }  /* entity columns in a comparison table centre; the label column stays left */
+  .tbl tbody tr { transition: background var(--t); }
+  .tbl tbody tr:hover { background: var(--fill); }
+  .tbl tbody tr.on, .tbl tbody tr[aria-selected="true"] { background: var(--wash); }
+  .tbl td.pos, .tbl .pos { color: var(--pos); }
+  .tbl td.neg, .tbl .neg { color: var(--neg); }  /* the components layer beats base, so .pos/.neg need restating inside a table */
+  .tbl th > button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  .reel.scroll { max-height: 480px; overflow-y: auto; }
+  .reel.scroll .tbl thead th { position: sticky; top: 0; z-index: 1; background: var(--surface); }
+  .tbl tr.total td { font-weight: 600; color: var(--ink); border-top: 1px solid var(--strong); }
+  .tbl tr.sub td { color: var(--muted); padding-top: var(--s-2); padding-bottom: var(--s-2); }
+  .tbl tr.sub td:first-child { padding-left: var(--s-8); font-weight: 400; color: var(--muted); }
+  .tbl th.sort { cursor: pointer; }
+  .tbl th.sort::after { content: "↕"; margin-left: var(--s-1); color: var(--faint); font-weight: 400; }
+  .tbl th[aria-sort="ascending"]::after { content: "↑"; color: var(--accent); }
+  .tbl th[aria-sort="descending"]::after { content: "↓"; color: var(--accent); }
+  .card.flush .tbl th:first-child, .card.flush .tbl td:first-child { padding-left: var(--s-6); }
+  .card.flush .tbl th:last-child, .card.flush .tbl td:last-child { padding-right: var(--s-6); }
+  .card.flush .tbl { border-bottom: 0; }
+  .card.flush .tbl tbody tr:last-child td { border-bottom: 0; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+
+  /* ---- bar list (Tremor BarList): label over a bar, value right */
+  .bars { display: flex; flex-direction: column; gap: var(--s-2); }
+  .bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); align-items: center; }
+  .bar .track { position: relative; height: 32px; border-radius: 4px; background: var(--fill); overflow: hidden; }
+  .bar .fill { position: absolute; inset: 0 auto 0 0; width: var(--w, 0); border-radius: 4px; background: var(--light); }  /* width from --w, so markup carries no presentational style */
+  .bar .lbl { position: absolute; left: var(--s-2); top: 6px; color: var(--ink); }
+  .bar .val { min-width: 56px; text-align: right; color: var(--ink); }
+
+  /* ---- chart frame and legend (chart-composition-01) */
+  .chart { position: relative; margin-top: var(--s-6); height: 288px; }
+  .chart.short { height: 192px; }
+  .chart svg { width: 100%; height: 100%; font-family: var(--font); font-size: var(--fs-12); }
+  .legend { display: flex; flex-wrap: wrap; gap: var(--s-4); margin-top: var(--s-4); color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .legend i { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 2px; vertical-align: 1px; background: var(--c); }
+
+  /* ---- controls (Tremor Button/Input/Select): 36 px, radius 6, 1 px shadow */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 var(--s-3); border: 1px solid var(--strong); border-radius: var(--r-6); background: var(--surface); color: var(--ink); font-weight: 500; box-shadow: var(--shadow-1); cursor: pointer; white-space: nowrap; transition: background var(--t), color var(--t), border-color var(--t); }
+  .btn:hover { background: var(--fill); }
+  .btn.primary { border-color: transparent; background: var(--accent); color: var(--surface); }
+  .btn.primary:hover { background: var(--deep); }
+  .btn.ghost { border-color: transparent; background: transparent; box-shadow: none; }
+  .btn.ghost:hover { background: var(--fill); }
+  .btn.sm { height: 32px; padding: 0 var(--s-2); font-size: var(--fs-12); }
+  .btn.icon { width: 36px; padding: 0; }
+  .btn.icon.sm { width: 32px; }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+  .field { display: flex; flex-direction: column; gap: var(--s-1); min-width: 0; }
+  .field > label, .field .out label { color: var(--muted); font-size: var(--fs-12); line-height: 16px; font-weight: 500; }
+  .field input, .field select, .field textarea, .input, .select {
+    width: 100%; height: 36px; padding: 0 var(--s-3); border: 1px solid var(--strong); border-radius: var(--r-6);
+    background: var(--surface); color: var(--ink); box-shadow: var(--shadow-1); transition: border-color var(--t);
+  }
+  .field input:hover, .field select:hover, .input:hover, .select:hover { border-color: var(--mid); }
+  .field textarea { height: auto; padding: var(--s-2) var(--s-3); }
+  .field .hint { color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .field input::placeholder, .input::placeholder, .field textarea::placeholder { color: var(--faint); }
+  .field.search { width: 256px; }
+  .field input[type="range"] { height: auto; padding: 0; border: 0; box-shadow: none; accent-color: var(--accent); }
+  .field .out { display: flex; justify-content: space-between; align-items: baseline; }
+  .field .out output { font-weight: 600; color: var(--ink); }
+  .field input:disabled, .field select:disabled, .field textarea:disabled, .input:disabled, .select:disabled { opacity: .5; cursor: not-allowed; background: var(--fill); }
+  .field input[aria-invalid="true"], .field select[aria-invalid="true"], .field textarea[aria-invalid="true"], .input[aria-invalid="true"] { border-color: var(--neg); }
+  .field .error { color: var(--neg); font-size: var(--fs-12); line-height: 16px; }
+  .switch { display: inline-flex; align-items: center; gap: var(--s-2); cursor: pointer; }
+  .switch i { position: relative; width: 36px; height: 20px; border-radius: 10px; background: var(--strong); transition: background var(--t); }
+  .switch i::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); box-shadow: var(--shadow-1); transition: left var(--t); }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .switch input:checked + i { background: var(--accent); }
+  .switch input:checked + i::after { left: 18px; }
+  .switch input:focus-visible + i { outline: var(--ring); outline-offset: 2px; }
+  .switch input:disabled + i { opacity: .5; }
+
+  /* ---- badge (Tremor): radius 6, 4/8 padding, 12/500, tint with inset ring */
+  .badge { display: inline-flex; align-items: center; gap: var(--s-1); padding: var(--s-1) var(--s-2); border-radius: var(--r-6); font-size: var(--fs-12); line-height: 16px; font-weight: 500; background: var(--fill); color: var(--ink); box-shadow: inset 0 0 0 1px rgba(91, 100, 112, .3); white-space: nowrap; }
+  .badge.pos { background: #EAF4EE; color: #0B5231; box-shadow: inset 0 0 0 1px rgba(15, 107, 63, .3); }
+  .badge.neg { background: #F6E9EA; color: #8A1826; box-shadow: inset 0 0 0 1px rgba(178, 31, 48, .25); }
+  .badge.sev { background: #FBF7E4; color: var(--sev-i); box-shadow: inset 0 0 0 1px rgba(217, 195, 106, .6); }
+  .badge.info { background: var(--wash); color: var(--navy); box-shadow: inset 0 0 0 1px rgba(42, 91, 135, .3); }
+
+  /* ---- callout (Tremor Callout), disclosure, empty state, tooltip */
+  .callout { padding: var(--s-4); border-radius: var(--r-8); background: var(--wash); color: var(--navy); }
+  .callout h4, .callout .lbl { color: var(--navy); font-size: var(--fs-14); line-height: 20px; font-weight: 600; }  /* .lbl in a document: a callout is not a section, so it takes no heading level */
+  .callout p { margin-top: var(--s-2); color: var(--deep); }
+  .callout.sev { background: #FBF7E4; color: var(--sev-i); } .callout.sev h4, .callout.sev .lbl, .callout.sev p { color: var(--sev-i); }
+  .callout.neg { background: #F6E9EA; } .callout.neg h4, .callout.neg .lbl, .callout.neg p { color: #8A1826; }
+  .disclosure { border: 1px solid var(--line); border-radius: var(--r-8); background: var(--surface); }
+  .disclosure > summary { display: flex; align-items: center; justify-content: space-between; padding: var(--s-3) var(--s-4); font-weight: 500; cursor: pointer; list-style: none; }
+  .disclosure > summary::-webkit-details-marker { display: none; }
+  .disclosure > summary::after { content: "+"; color: var(--muted); }
+  .disclosure[open] > summary::after { content: "−"; }
+  .disclosure[open] > summary { border-bottom: 1px solid var(--line); }
+  .disclosure > .body { padding: var(--s-4); color: var(--deep); }
+  .empty { padding: var(--s-12) var(--s-6); text-align: center; color: var(--muted); border: 1px dashed var(--strong); border-radius: var(--r-8); }
+  .empty h4 { color: var(--ink); }
+  .empty p { margin-top: var(--s-1); }
+  .skeleton { display: block; height: 20px; border-radius: var(--r-6); background: var(--fill); }
+  .skeleton.value { height: 36px; width: 60%; }
+  .tip { position: absolute; z-index: 20; min-width: 160px; padding: var(--s-2) var(--s-3); border: 1px solid var(--line); border-radius: var(--r-6); background: var(--surface); box-shadow: var(--shadow-float); font-size: var(--fs-12); line-height: 16px; opacity: 0; pointer-events: none; transition: opacity var(--t); }
+  .tip.on { opacity: 1; }
+  .tip .td { font-weight: 600; color: var(--ink); margin-bottom: var(--s-1); }
+  .tip .tr { display: flex; justify-content: space-between; gap: var(--s-3); color: var(--muted); }
+  .tip .tr b { color: var(--ink); }
+  .divider { height: 1px; background: var(--line); }
+
+  /* ---- diagram: a chain of boxes and edges in SVG; pointing at a box lights its path and swaps the readout under it, and the
+     .readout must be the diagram's next sibling. Markup: .diagram > svg with g.node[data-k] (rect, text.nm, text.sb) and g.edge (polyline, text.lbl); every
+     node and edge on a node's path carries p-<k>. Roles: .node (a holder, wash), .node.lead (where the money comes from, navy),
+     .node.subject (the entity the page is about, accent), .node.asset (dashed). incrementum.js sets .hover on the container, .on
+     along the path and .is on the box; without it the page shows the whole diagram and the readout's opening paragraph. */
+  .diagram { max-width: 660px; margin-inline: auto; }  /* sheet width, so its type does not scale up on a wider surface */
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram .edge polyline { fill: none; stroke: var(--mid); stroke-width: 1.5; stroke-linejoin: round; transition: stroke var(--t), stroke-width var(--t); }
+  .diagram .edge .lbl { font-size: var(--fs-12); font-weight: 600; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--surface); stroke-width: 6px; stroke-linejoin: round; }
+  .diagram .node { cursor: pointer; outline: none; }
+  .diagram .node rect { fill: var(--wash); stroke: var(--light); stroke-width: 1.5; transition: stroke var(--t), stroke-width var(--t); }
+  .diagram .node .nm { font-size: var(--fs-14); font-weight: 600; fill: var(--navy); text-anchor: middle; }
+  .diagram .node .sb { font-size: var(--fs-12); fill: var(--muted); text-anchor: middle; }
+  .diagram .node.lead rect { fill: var(--navy); stroke: var(--navy); }
+  .diagram .node.subject rect { fill: var(--accent); stroke: var(--accent); }
+  .diagram .node.lead .nm, .diagram .node.subject .nm { fill: var(--surface); }
+  .diagram .node.lead .sb, .diagram .node.subject .sb { fill: var(--light); }
+  .diagram .node.asset rect { fill: var(--surface); stroke: var(--mid); stroke-dasharray: 5 3; }
+  .diagram .node.asset .nm { fill: var(--ink); }
+  .diagram .node, .diagram .edge { transition: opacity var(--t); }
+  .diagram.hover .node:not(.on), .diagram.hover .edge:not(.on) { opacity: .72; }
+  .diagram.hover .edge.on polyline { stroke: var(--accent); stroke-width: 2.2; }
+  .diagram .node.is rect, .diagram .node:focus-visible rect { stroke: var(--accent); stroke-width: 2.5; }
+  .readout { margin-top: var(--s-4); padding: var(--s-3) var(--s-4); min-height: 76px; border-radius: var(--r-8); background: var(--fill); color: var(--deep); line-height: 22px; }
+  .readout p { margin: 0; }
+  .readout p[hidden] { display: none; }
+  .readout b { color: var(--ink); font-weight: 600; }
+  @media (max-width: 640px) { .diagram { overflow-x: auto; -webkit-overflow-scrolling: touch; } .diagram svg { min-width: 640px; } }
+  @media print { .diagram .node, .diagram .edge { opacity: 1; } }
+
+  /* ---- premises: the inputs of a calculation in equal groups on one surface. Each group opens on the number
+     it produces (.gl: name, value), holds its fields, and closes with a small chain (.ch: label, value, auxiliary reading) that
+     shows the steps from input to number. One column under 1024. */
+  .prem { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); border: 1px solid var(--line); border-radius: var(--r-8); background: var(--surface); }
+  .prem > .g { display: grid; gap: var(--s-4); align-content: start; padding: var(--s-4); }
+  .prem > .g ~ .g { border-left: 1px solid var(--line); }
+  .prem .gl { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-3); padding-bottom: var(--s-2); border-bottom: 1px solid var(--hair); font-weight: 600; }
+  .prem .gl > .k { color: var(--ink); }
+  .prem .gl > .v { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .prem .ch { display: grid; margin-top: var(--s-2); border-top: 1px solid var(--line); }
+  .prem .ch > .r { display: grid; grid-template-columns: minmax(0, 1fr) auto 52px; align-items: center; gap: 0 var(--s-4); height: 32px; border-bottom: 1px solid var(--hair); color: var(--deep); }
+  .prem .ch > .r:last-child { border-bottom: 0; }
+  .prem .ch > .r.hd { height: 24px; color: var(--muted); font-weight: 500; font-size: var(--fs-12); line-height: 16px; }
+  .prem .ch > .r > b, .prem .ch > .r.hd > span:nth-child(2) { text-align: right; }
+  .prem .ch > .r > b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .prem .ch > .r > .aux { color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+  @media (max-width: 1024px) { .prem { grid-auto-flow: row; grid-auto-columns: auto; } .prem > .g ~ .g { border-left: 0; border-top: 1px solid var(--line); } }
+
+  /* ---- owner line and base row: two tables that are two readings of the same rows use the same colgroup widths, so the
+     columns mirror; .owner names who reads each one and tr.base is the row the others are measured against. */
+  .owner { display: flex; align-items: baseline; gap: var(--s-3); margin-bottom: var(--s-2); }
+  .owner > .nm { font-size: var(--fs-16); line-height: 24px; font-weight: 600; color: var(--ink); }
+  .owner > .at { color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .owner > .at b { color: var(--deep); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tbl tbody tr.base td { font-weight: 600; background: var(--wash); }
+
+  .sheet .tbl th:not(.num), .sheet .tbl td:not(.num) { white-space: normal; }  /* on paper a label or a head wraps; a number never does */
+  /* ---- document parts on a sheet: mast, title, prose, exhibit, footnotes, folio */
+  .mast { display: flex; justify-content: space-between; gap: var(--s-4); padding-bottom: var(--s-2); margin-bottom: var(--s-8); border-bottom: 1px solid var(--ink); font-size: var(--fs-12); line-height: 16px; font-weight: 500; }
+  .mast.run { border-bottom-color: var(--line); color: var(--muted); font-weight: 400; margin-bottom: var(--s-6); }
+  .mast.run b { color: var(--ink); font-weight: 500; }
+  .title h1 { font-size: var(--fs-30); line-height: 36px; font-weight: 600; color: var(--navy); }
+  .title .deck { margin-top: var(--s-3); font-size: var(--fs-16); line-height: 24px; color: var(--deep); }
+  .title .meta { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); margin-top: var(--s-4); color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .title .meta b { color: var(--ink); font-weight: 500; }
+  .prose { font-size: var(--fs-14); line-height: 22px; }
+  .prose > * + * { margin-top: var(--s-3); }
+  .prose h2 { margin-top: var(--s-8); font-size: var(--fs-24); line-height: 32px; color: var(--navy); }
+  .prose h3 { margin-top: var(--s-6); font-size: var(--fs-16); line-height: 24px; color: var(--navy); }
+  .prose h2 + *, .prose h3 + * { margin-top: var(--s-2); }
+  .prose > h2:first-child, .prose > h3:first-child { margin-top: 0; }  /* a heading that opens a sheet body sits under the running head */
+  .sheet > .body > * + * { margin-top: var(--s-8); }  /* top-level blocks of a sheet body sit a section apart */
+  .prose li + li { margin-top: var(--s-1); }
+  .kpi-line { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--s-4); padding: var(--s-4) 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); }
+  .kpi-line dt { color: var(--muted); font-size: var(--fs-12); line-height: 16px; font-weight: 500; }
+  .kpi-line dd { margin-top: var(--s-1); font-size: var(--fs-18); line-height: 24px; font-weight: 600; color: var(--ink); }
+  .exh { margin-top: var(--s-6); }
+  .exh > h3 { font-size: var(--fs-14); line-height: 20px; font-weight: 600; color: var(--ink); }
+  .exh > h3 .no { color: var(--accent); margin-right: var(--s-2); }
+  .exh > .sub { margin-top: 2px; color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .exh > .figure { margin-top: var(--s-3); overflow-x: auto; }
+  .exh > .note { margin-top: var(--s-2); color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .exh .tbl th { padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--ink); }
+  .exh .tbl td { padding: var(--s-2) var(--s-3); }
+  .exh .tbl th:first-child, .exh .tbl td:first-child { padding-left: 0; }
+  .exh .tbl th:last-child, .exh .tbl td:last-child { padding-right: 0; }
+  a.ref { padding: 0 0 0 1px; color: var(--accent); font-size: 10px; line-height: 0; vertical-align: super; text-decoration: none; font-weight: 600; }
+  .fnotes { list-style: none; margin-top: auto; padding: var(--s-2) 0 0; border-top: 1px solid var(--strong); color: var(--muted); font-size: var(--fs-12); line-height: 16px; }
+  .fnotes li { position: relative; padding-left: 16px; }
+  .fnotes li + li { margin-top: var(--s-1); }
+  .fnotes .nm { position: absolute; left: 0; top: 0; color: var(--accent); font-weight: 600; }
+  .folio { display: flex; justify-content: space-between; gap: var(--s-4); margin-top: var(--s-6); color: var(--faint); font-size: var(--fs-12); line-height: 16px; }
+  .fnotes + .folio { margin-top: var(--s-3); }
+  .toc { margin-top: var(--s-4); padding-top: var(--s-2); border-top: 1px solid var(--ink); }
+  .toc a { display: flex; justify-content: space-between; gap: var(--s-3); padding: var(--s-1) 0; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+  .toc a span { color: var(--muted); }
+
+  /* ---- narrow variant: an exhibit that cannot hold at 390 px swaps form at 640.
+     Declared last in the layer so it beats a component's own display. */
+  .narrow-only { display: none; }
+  @media (max-width: 640px) {
+    .wide-only { display: none; }
+    .narrow-only { display: block; margin-top: var(--s-6); }
+  }
+
+  /* ---- responsive */
+  @media (max-width: 1024px) {
+    .sidebar .group { flex-direction: row; padding: 0; gap: var(--s-1); }
+    .sidebar .group-label, .sidebar .nav-sub, .sidebar .foot, .sidebar .nav-item .ico, .sidebar .nav-item .count { display: none; }
+    .sidebar .brand { height: 40px; padding-right: var(--s-2); }
+  }
+  @media (max-width: 640px) {
+    .page-head, .card-head { flex-direction: column; }
+    .field.search { width: 100%; }
+    .btn, .field input, .field select, .input, .select { height: 40px; }
+    .chart { overflow-x: auto; }
+    .chart svg { min-width: 640px; }
+    .title h1 { font-size: var(--fs-24); line-height: 32px; }
+    .kpi .value { font-size: var(--fs-24); line-height: 32px; }
+  }
+
+  /* ---- print: static, complete, paper margins from the sheet itself */
+  @media print {
+    html, body { background: #fff; }
+    .shell { display: block; }
+    .sidebar, .header .actions, .actions .btn, .tabs, .seg, .tip { display: none; }
+    .tabset > .panels > * { display: block; }
+    .inset { margin: 0; border: 0; border-radius: 0; box-shadow: none; }
+    .content { max-width: none; padding: 0; }
+    .card { box-shadow: none; break-inside: avoid; }
+    .narrow-only { display: none; }
+    .wide-only { display: block; }
+    .chart { overflow: visible; }
+    .chart svg { min-width: 0; }
+    .sheets { display: block; padding: 0; background: #fff; }
+    .sheet { width: 210mm; min-height: 296mm; margin: 0 auto; box-shadow: none; break-after: page; }
+    .sheet:last-child { break-after: auto; }
+    .exh, .tbl tr, .kpi-line, .callout, .disclosure { break-inside: avoid; }
+    h1, h2, h3 { break-after: avoid; }
+    p { orphans: 3; widows: 3; }
+    .tbl thead { display: table-header-group; }
+    .tbl tbody tr:hover { background: transparent; }
+    .reel { overflow: visible; }
+    .disclosure:not([open]) > .body { display: block; }
+    .disclosure::details-content { content-visibility: visible; }
+    .disclosure > summary::after { content: ""; }
+    a { color: inherit; text-decoration: none; }
+  }
+}
+
+@layer section {
+  .tbl.agenda td, .tbl.agenda th { white-space: normal; }
+  body { background: var(--canvas); }
+  .election-frame { margin: var(--s-6) var(--s-12); min-height: 100%; min-height: calc(100svh - var(--s-12)); min-height: calc(100dvh - var(--s-12)); }
+  .election-header { position: static; }
+  .election-content { max-width: none; }
+  .sim-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-6); align-items: start; }
+  .sim-layout > * { min-width: 0; }
+  .results { display: grid; gap: var(--s-4); }
+  .result-list { font-variant-numeric: tabular-nums; }
+  .result-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); padding-top: var(--s-3); margin-top: var(--s-3); border-top: 1px solid var(--line); }
+  .result-pair:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+  .result-pair dd { text-align: right; font-weight: 600; }
+  .result-sub { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); padding-left: var(--s-4); margin-top: var(--s-1); color: var(--muted); }
+  .result-sub dd { text-align: right; }
+  .result-note { margin-top: var(--s-1); padding-left: var(--s-4); color: var(--muted); font-size: var(--fs-12); }
+  .js-only, html:not(.js) .js-only { display: none; }
+  html:not(.js) .percent-input { opacity: 1; color: var(--muted); }
+  .js .js-only { display: flex; }
+  .js .offline-note { display: none; }
+  .presets { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+  .presets .pl { flex-basis: 100%; color: var(--muted); font-size: var(--fs-12); font-weight: 500; }
+  .preset-seg { flex-wrap: wrap; }
+  .touch-button { min-height: var(--s-12); height: auto; min-width: var(--s-12); white-space: normal; }
+  .reset-icon { width: var(--s-4); height: var(--s-4); flex-shrink: 0; }
+  .bloc-head, .bloc-row { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) repeat(2, minmax(0, .75fr)) minmax(0, .8fr); align-items: center; gap: var(--s-2); }
+  .bloc-head { font-weight: 600; padding-bottom: var(--s-2); border-bottom: 1px solid var(--strong); }
+  .bloc-head > :not(:first-child) { text-align: right; }
+  .bloc-row { padding: var(--s-2) 0; border-bottom: 1px solid var(--line); }
+  .bloc-name { font-weight: 600; }
+  .bloc-number, .bloc-cell { text-align: right; min-width: 0; }
+  .bloc-cell label, .mobile-label { display: none; }
+  .percent-input { width: 100%; min-height: var(--s-12); height: var(--s-12); padding: var(--s-2); font-size: var(--fs-16); text-align: right; }
+  .bloc-total { padding-top: var(--s-3); font-weight: 600; }
+  .bloc-toggle { display: flex; gap: var(--s-2); align-items: center; min-height: var(--s-12); cursor: pointer; }
+  .chevron { width: var(--s-3); height: var(--s-3); flex: 0 0 var(--s-3); }
+  #demais-toggle:checked ~ .bloc-row .chevron { transform: rotate(90deg); }
+  #demais-toggle:focus-visible ~ .bloc-row .bloc-toggle { outline: var(--ring); }
+  .bloc-children { display: none; padding: var(--s-2) 0 var(--s-3) var(--s-6); color: var(--muted); border-bottom: 1px solid var(--line); }
+  #demais-toggle:checked ~ .bloc-children { display: grid; gap: var(--s-2); }
+  .child-row { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .child-row dd { white-space: nowrap; }
+  .voter-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-4); }
+  .voter-field { min-width: 0; }
+  .voter-readout { flex-wrap: wrap; gap: var(--s-1) var(--s-2); }
+  .voter-field .touch-range { min-height: var(--s-12); height: var(--s-12); cursor: pointer; }
+    .touch-range { appearance: none; -webkit-appearance: none; }
+  .touch-range::-webkit-slider-runnable-track { height: var(--s-2); background: var(--line); border-radius: var(--r-6); }
+  .touch-range::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: var(--s-6); height: var(--s-6); margin-top: calc(0px - var(--s-2)); border: 1px solid var(--accent); background: var(--accent); border-radius: 50%; }
+  .touch-range::-moz-range-track { height: var(--s-2); background: var(--line); border-radius: var(--r-6); }
+  .touch-range::-moz-range-thumb { width: var(--s-6); height: var(--s-6); border: 1px solid var(--accent); background: var(--accent); border-radius: 50%; }
+  .stepper { gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+  .step-hint { flex: 1; text-align: center; }
+  .sim-foot { margin-top: var(--s-6); }
+  .bridge { display: grid; gap: var(--s-2); }
+  .br-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) calc(var(--s-12) * 2); gap: var(--s-2); align-items: center; }
+  .br-tot { padding-top: var(--s-3); border-top: 1px solid var(--strong); font-weight: 600; }
+  .br-tot .br-track { outline: 1px solid var(--strong); }
+  .br-track { position: relative; height: var(--s-6); background: var(--fill); border-radius: var(--r-6); }
+  .br-track::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px solid var(--strong); }
+  .br-fill { position: absolute; top: 0; bottom: 0; width: var(--w, 0); border-radius: var(--r-6); }
+  .br-fill.br-f { right: 50%; background: var(--navy); }
+  .br-fill.br-l { left: 50%; background: var(--mid); }
+  .br-v { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .br-axis { color: var(--muted); font-size: var(--fs-12); }
+  .br-ends { display: flex; justify-content: space-between; gap: var(--s-3); }
+  .evidence-table { white-space: normal; }
+  .evidence-table th { white-space: normal; }
+  
+  .data-reel { overflow: visible; }
+  .group-table { border-collapse: separate; border-spacing: 0; }
+  .group-table .group-label-cell { position: relative; text-align: center; border-bottom: 0; }
+  .group-label-cell::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--strong); }
+  .group-table .group-start { border-left: var(--s-3) solid var(--surface); }
+  .abstention-table { table-layout: auto; }
+  .phone-result { display: none; }
+  @media (max-width: 1024px) {
+    .election-frame { margin: var(--s-4) var(--s-6); border: 1px solid var(--line); border-radius: var(--r-12); }
+    .sim-layout { grid-template-columns: minmax(0, 1fr); }
+    .evidence-table th, .evidence-table td { padding-left: var(--s-2); padding-right: var(--s-2); }
+  }
+  @media (max-width: 640px) {
+    .election-frame { margin: max(var(--s-2), env(safe-area-inset-top)) max(var(--s-2), env(safe-area-inset-right)) max(var(--s-2), env(safe-area-inset-bottom)) max(var(--s-2), env(safe-area-inset-left)); }
+    .election-content { padding: var(--s-3); }
+    .js body { padding-bottom: calc(var(--s-12) + var(--s-8) + env(safe-area-inset-bottom)); }
+    .js .phone-result { display: flex; position: fixed; z-index: 20; bottom: 0; left: 0; right: 0; justify-content: center; flex-wrap: wrap; gap: var(--s-1) var(--s-4); padding: var(--s-3) max(var(--s-4), env(safe-area-inset-right)) max(var(--s-3), env(safe-area-inset-bottom)) max(var(--s-4), env(safe-area-inset-left)); background: var(--surface); border-top: 1px solid var(--strong); }
+    .phone-result strong { flex-basis: 100%; text-align: center; }
+    .bloc-head { display: none; }
+    .bloc-row { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2); padding: var(--s-3) 0; }
+    .bloc-name { grid-column: 1 / 3; }
+    .bloc-number { grid-column: 3; }
+    .bloc-cell label, .mobile-label { display: block; color: var(--muted); font-size: var(--fs-12); text-align: left; }
+    .bloc-cell { text-align: left; }
+    .bloc-cell [data-s="n"] { display: flex; min-height: var(--s-12); align-items: center; justify-content: flex-end; }
+    .bloc-total { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-2); }
+    .bloc-total .bloc-name { grid-column: 1; }
+    .bloc-total .bloc-number { grid-column: 2; }
+    .bloc-total .bloc-cell { display: flex; justify-content: space-between; grid-column: 1 / -1; }
+    .voter-controls { grid-template-columns: minmax(0, 1fr); }
+    .br-row { grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-1) var(--s-2); }
+    .br-track { grid-column: 1 / -1; grid-row: 2; height: var(--s-4); }
+    .data-reel { overflow-x: auto; }
+    .scenario-table, .scenario-table tbody { display: block; }
+    .scenario-table thead { display: none; }
+    .scenario-table tr { display: grid; grid-template-columns: minmax(0, 1fr); padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--strong); }
+    .scenario-table td { display: flex; justify-content: space-between; gap: var(--s-3); padding: var(--s-2) 0; white-space: normal; }
+    .scenario-table td::before { content: attr(data-label); color: var(--muted); text-align: left; }
+    .scenario-table td:first-child, .scenario-table td:last-child { padding-left: 0; padding-right: 0; }
+    .scenario-table td:nth-child(-n+2) { font-weight: 600; }
+  }
+  @media print {
+    @page { margin: var(--s-12); }
+    body { background: var(--surface); }
+    .election-frame { margin: 0; min-height: 0; border: 0; }
+    .election-content { padding: 0; }
+    .sim-layout { display: block; }
+    .results { margin-top: var(--s-6); }
+    .js .js-only, .js .phone-result, .touch-range { display: none; }
+    .data-reel { overflow: visible; }
+    .evidence-table th, .evidence-table td { padding-left: var(--s-2); padding-right: var(--s-2); }
+    .group-table .group-start { border-left-width: var(--s-1); }
+    .bloc-children { display: grid; gap: var(--s-1); }
+    .bloc-toggle .chevron { display: none; }
+      .sim-card { break-inside: auto; }
+    .percent-input { min-height: var(--s-8); height: var(--s-8); }
+    .bloc-row { padding: var(--s-1) 0; }
+    .sim-foot { margin-top: var(--s-3); }
+    .results { break-inside: avoid; }
+    .print-stack { display: block; }
+    .print-stack > * + * { margin-top: var(--s-6); }
+    .result-list, .bridge, .voter-field { break-inside: avoid; }
+  }
+  /* Seven-year extension of the kit tabset; the kit owns the first six radio/panel pairs. */
+  .history-pad { padding: 0 var(--s-6) var(--s-6); }
+  .year-tabs { flex-wrap: wrap; }
+  .year-label { min-width: var(--s-12); min-height: var(--s-12); display: inline-flex; align-items: center; justify-content: center; }
+  #year-2002:checked ~ .history-panels > #history-2002 { display: block; }
+  #year-2002:checked ~ .year-tabs > [for="year-2002"] { color: var(--accent); border-bottom-color: var(--accent); }
+  #year-2002:focus-visible ~ .year-tabs > [for="year-2002"] { outline: var(--ring); }
+  .history-year { margin-bottom: var(--s-4); }
+  .history-current, .history-rounds { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s-8); align-items: start; }
+  .history-current > *, .history-rounds > * { min-width: 0; }
+  .history-round { display: grid; gap: var(--s-6); }
+  .vote-caption { color: var(--muted); font-size: var(--fs-12); margin-top: var(--s-1); }
+  .vote-bar { display: flex; height: var(--s-8); margin-top: var(--s-3); border-radius: var(--r-6); overflow: hidden; }
+  .vote-segment { flex: 0 0 var(--share); display: flex; align-items: center; justify-content: center; font-size: var(--fs-12); font-weight: 500; }
+  .series-0 { background: var(--navy); color: var(--surface); }
+  .series-1 { background: var(--accent); color: var(--surface); }
+  .series-2 { background: var(--mid); color: var(--ink); }
+  .series-3 { background: var(--light); color: var(--ink); }
+  .vote-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3) var(--s-4); margin-top: var(--s-3); }
+  .vote-entry { display: grid; grid-template-columns: var(--s-3) minmax(0, 1fr) auto; gap: var(--s-1) var(--s-2); align-items: baseline; }
+  .vote-key { display: inline-block; width: var(--s-3); height: var(--s-3); flex-shrink: 0; }
+  .vote-name { min-width: 0; }
+  .vote-pct { white-space: nowrap; }
+  .vote-count { grid-column: 2 / -1; font-size: var(--fs-12); color: var(--muted); }
+  .vote-winner { font-weight: 600; }
+  .round-metrics { border-top: 1px solid var(--strong); }
+  .round-metric { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s-3); padding: var(--s-2) 0; border-bottom: 1px solid var(--line); }
+  .round-metric dd { text-align: right; font-variant-numeric: tabular-nums; }
+  .round-metric small { display: block; color: var(--muted); }
+  .governor-exhibit { padding-top: var(--s-4); border-top: 1px solid var(--line); }
+  .history-panel > .governor-exhibit { margin-top: var(--s-6); }
+  .uf-legend { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); margin-top: var(--s-2); color: var(--muted); font-size: var(--fs-12); }
+  .uf-legend > span { display: flex; gap: var(--s-2); align-items: center; }
+  .uf-grid { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: var(--s-1); max-width: calc(var(--s-8) * 9 + var(--s-1) * 8); margin-top: var(--s-3); }
+  .uf-tile { display: flex; align-items: center; justify-content: center; aspect-ratio: 1; font-size: var(--fs-12); font-weight: 500; }
+  .uf-first { background: var(--navy); color: var(--surface); }
+  .uf-runoff { background: var(--light); color: var(--ink); }
+  .senate-note { margin-top: var(--s-3); }
+  .abstention-table th, .abstention-table td { padding-left: var(--s-2); padding-right: var(--s-2); }
+  .abstention-table .group-start { border-left-width: var(--s-2); }
+  @media (max-width: 1024px) {
+    .abstention-table th, .abstention-table td { padding-left: var(--s-1); padding-right: var(--s-1); }
+    .abstention-table .group-start { border-left-width: var(--s-1); }
+  }
+  @media (max-width: 640px) {
+    .history-pad { padding: 0 var(--s-4) var(--s-4); }
+    .history-current, .history-rounds { grid-template-columns: minmax(0, 1fr); gap: var(--s-6); }
+    .vote-legend { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media print {
+    .history-card { break-inside: auto; }
+    .history-panel { break-before: page; }
+    .history-panel:first-child { break-before: auto; }
+    .history-pad { padding: 0; }
+    .history-current { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s-4); }
+    .history-rounds { gap: var(--s-4); }
+    .vote-legend { grid-template-columns: minmax(0, 1fr); }
+    .vote-figure, .history-round, .governor-exhibit { break-inside: avoid; }
+    .abstention-table th, .abstention-table td { padding-left: var(--s-1); padding-right: var(--s-1); }
+  }
+
+}
+</style>
+</head>
+<body>
+<div class="inset election-frame">
+  <header class="header election-header">
+    <nav class="crumbs" aria-label="Breadcrumb"><span>Brasil</span><span>/</span><b>Eleição 2026, 2º Turno</b></nav>
+    <span class="spacer"></span>
+    <div class="actions"><button class="btn ghost touch-button js-only" type="button" id="print">Imprimir</button></div>
+  </header>
+  <main class="content election-content">
+    <div class="page-head">
+      <div>
+        <h1>Lula x Flávio: O Que Falta Para Virar</h1>
+        <p>Flávio terminou o 1º turno 2.224.965 votos à frente (47,03% x 45,16% dos válidos). Com a 3ª via meio a meio, Lula precisa tirar essa diferença entre quem não votou no 1º turno, e o comparecimento caiu no 2º turno em cinco das seis eleições desde 2002. Com a abstenção neutra, Lula precisa de 61,9% dos 9,3 milhões de votos da 3ª via, e as pesquisas mostram a 3ª via pendendo para Flávio.</p>
+      </div>
+    </div>
+
+    <!-- Simulator and its live result share one region. -->
+    <div class="sim-layout">
+      <section class="card sim-card" aria-labelledby="h-sim">
+        <div class="card-head"><div><h3 id="h-sim">Simulador</h3><p>Padrão: tudo 50-50 e abstenção igual à do 1º turno. 3ª via em % do bloco; o resto vai a branco/nulo. O resultado e a ponte seguem cada mudança.</p></div></div>
+        <p class="offline-note muted">Sem JavaScript: premissas padrão, resultado e cenários prontos disponíveis abaixo.</p>
+        <form id="form" class="stack stack-4" aria-label="Premissas do simulador">
+          <div class="presets js-only"><span class="pl">3ª via</span>
+            <div class="seg preset-seg" role="group" aria-label="Cenário da 3ª via">
+              <button class="touch-button" type="button" aria-pressed="true" data-tv="base">50‑50</button>
+              <button class="touch-button" type="button" aria-pressed="false" data-tv="nexus">Nexus/BTG 13/10</button>
+              <button class="touch-button" type="button" aria-pressed="false" data-tv="quaest">Quaest 03/10</button>
+            </div><button class="btn ghost touch-button" id="reset-tv" type="button"><svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg>Voltar ao 50-50</button>
+          </div>
+          <div id="tv"><div class="bloc-head"><span>Bloco</span><span>Votos 1º Turno</span><span>Lula %</span><span>Flávio %</span><span>Branco/<wbr>Nulo %</span></div>
+<div class="bloc-row" data-k="cury"><div class="bloc-name">Augusto Cury</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>3.448.569</div>
+<div class="bloc-cell"><label for="cury-l">Lula %</label><input id="cury-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Augusto Cury, % Lula" disabled></div>
+<div class="bloc-cell"><label for="cury-f">Flávio %</label><input id="cury-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Augusto Cury, % Flávio" disabled></div>
+<div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
+<div class="bloc-row" data-k="renan"><div class="bloc-name">Renan Santos</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>2.675.887</div>
+<div class="bloc-cell"><label for="renan-l">Lula %</label><input id="renan-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Renan Santos, % Lula" disabled></div>
+<div class="bloc-cell"><label for="renan-f">Flávio %</label><input id="renan-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Renan Santos, % Flávio" disabled></div>
+<div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
+<div class="bloc-row" data-k="caiado"><div class="bloc-name">Ronaldo Caiado</div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>2.605.148</div>
+<div class="bloc-cell"><label for="caiado-l">Lula %</label><input id="caiado-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Ronaldo Caiado, % Lula" disabled></div>
+<div class="bloc-cell"><label for="caiado-f">Flávio %</label><input id="caiado-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Ronaldo Caiado, % Flávio" disabled></div>
+<div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
+<input class="visually-hidden" type="checkbox" id="demais-toggle" aria-label="Expandir Demais (7)" aria-controls="demais-children">
+<div class="bloc-row" data-k="demais"><div class="bloc-name"><label class="bloc-toggle" for="demais-toggle"><svg class="chevron" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m4 2 4 4-4 4"/></svg>Demais (7)</label></div><div class="bloc-number"><span class="mobile-label">Votos 1º Turno</span>587.143</div>
+<div class="bloc-cell"><label for="demais-l">Lula %</label><input id="demais-l" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="l" aria-label="Demais (7), % Lula" disabled></div>
+<div class="bloc-cell"><label for="demais-f">Flávio %</label><input id="demais-f" class="input percent-input" type="number" inputmode="numeric" min="0" max="100" step="1" value="50" data-s="f" aria-label="Demais (7), % Flávio" disabled></div>
+<div class="bloc-cell"><span class="mobile-label">Branco/Nulo %</span><span data-s="n">0</span></div></div>
+<dl class="bloc-children" id="demais-children"><div class="child-row"><dt>Romeu Zema</dt><dd>326.488</dd></div><div class="child-row"><dt>Samara Martins</dt><dd>122.911</dd></div><div class="child-row"><dt>Hertz Dias</dt><dd>43.103</dd></div><div class="child-row"><dt>Clariana Barão</dt><dd>40.043</dd></div><div class="child-row"><dt>Edmilson Costa</dt><dd>22.693</dd></div><div class="child-row"><dt>Wilson Grassi</dt><dd>16.881</dd></div><div class="child-row"><dt>Rui Costa Pimenta</dt><dd>15.024</dd></div></dl>
+<div class="bloc-head bloc-total"><span class="bloc-name">Total 3ª via</span><span class="bloc-number">9.316.747</span><span class="bloc-cell"><span class="mobile-label">Lula</span><span id="tv-l">4.658.374</span></span><span class="bloc-cell"><span class="mobile-label">Flávio</span><span id="tv-f">4.658.374</span></span><span class="bloc-cell"><span class="mobile-label">Branco/Nulo</span><span id="tv-n">0</span></span></div>
+          </div>
+          <div class="presets js-only"><span class="pl">Abstenção</span>
+            <div class="seg preset-seg" role="group" aria-label="Cenário de abstenção">
+              <button class="touch-button" type="button" aria-pressed="true" data-ab="base">Neutra</button>
+              <button class="touch-button" type="button" aria-pressed="false" data-ab="y2022">Como 2022</button>
+              <button class="touch-button" type="button" aria-pressed="false" data-ab="avg">Média 2002–18</button>
+            </div><button class="btn ghost touch-button" id="reset-ab" type="button"><svg class="reset-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/></svg>Voltar à Neutra</button>
+          </div>
+          <div class="voter-controls">
+            <div class="field voter-field"><div class="out voter-readout"><label for="ret">Voltam a Votar</label><output id="ret-out" for="ret">0,00 mi (0)</output></div><input id="ret" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><div class="stepper js-only"><button class="btn ghost touch-button" type="button" data-step="-250000" data-target="ret" aria-label="Diminuir 250.000 eleitores">−</button><span class="hint step-hint">250.000 eleitores</span><button class="btn ghost touch-button" type="button" data-step="250000" data-target="ret" aria-label="Somar 250.000 eleitores">+</button></div><span class="hint">Abstiveram-se no 1º turno e votam em Lula ou Flávio; até 10 milhões</span></div>
+            <div class="field voter-field"><div class="out voter-readout"><label for="retl">Desses, % Lula</label><output id="retl-out" for="retl">50%</output></div><input id="retl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"><span class="hint">O resto vai para Flávio</span></div>
+            <div class="field voter-field"><div class="out voter-readout"><label for="out">Deixam de Votar</label><output id="out-out" for="out">0,00 mi (0)</output></div><input id="out" class="touch-range" disabled type="range" min="0" max="10000000" step="1" value="0"><div class="stepper js-only"><button class="btn ghost touch-button" type="button" data-step="-250000" data-target="out" aria-label="Diminuir 250.000 eleitores">−</button><span class="hint step-hint">250.000 eleitores</span><button class="btn ghost touch-button" type="button" data-step="250000" data-target="out" aria-label="Somar 250.000 eleitores">+</button></div><span class="hint">Votaram em Lula ou Flávio no 1º turno e se abstêm no 2º</span></div>
+            <div class="field voter-field"><div class="out voter-readout"><label for="outl">Desses, % que Era de Lula</label><output id="outl-out" for="outl">50%</output></div><input id="outl" class="touch-range" disabled type="range" min="0" max="100" step="1" value="50"><span class="hint">O resto era de Flávio</span></div>
+          </div>
+        </form>
+        <div class="card-foot sim-foot"><span>Cenários de pesquisa mudam só Cury, Renan e Caiado; Demais fica 50-50 porque nenhuma das duas pesquisas o informa. Como 2022: −0,36 p.p. (578.779 voltam). Média 2002–18: +2,20 p.p. (3.499.817 deixam)</span></div>
+      </section>
+      <aside class="results" aria-label="Resultado do cenário">
+        <section class="card" aria-labelledby="h-result">
+          <div class="card-head"><h3 id="h-result">Resultado</h3></div>
+          <dl class="result-list" aria-live="polite">
+            <div class="result-pair"><dt>Flávio Bolsonaro</dt><dd><output class="pos" id="k-f">60.762.877</output></dd></div>
+            <div class="result-sub"><dt>% Válidos</dt><dd><output class="pos" id="k-f-p">50,93%</output></dd></div>
+            <div class="result-pair"><dt>Lula</dt><dd><output class="" id="k-l">58.537.912</output></dd></div>
+            <div class="result-sub"><dt>% Válidos</dt><dd><output class="neg" id="k-l-p">49,07%</output></dd></div>
+            <div class="result-pair"><dt>Margem</dt><dd><output id="k-m">2.224.965</output></dd></div>
+            <div class="result-sub"><dt>Na frente</dt><dd><output id="k-m-p">Flávio</output></dd></div>
+            <div class="result-note" id="k-m-c">1,87 p.p. dos válidos entre os dois</div>
+            <div class="result-pair"><dt>Abstenção no 2º Turno</dt><dd><output id="k-a">33.469.244</output></dd></div>
+            <div class="result-sub"><dt>% Eleitorado</dt><dd><output id="k-a-p">21,08%</output></dd></div>
+            <div class="result-note" id="k-a-c">Igual ao 1º turno</div>
+          </dl>
+        </section>
+        <section class="card" aria-labelledby="h-bridge">
+          <div class="card-head"><div><h3 id="h-bridge">Ponte da Margem</h3><p>Diferença Lula - Flávio: começa no 1º turno e cada grupo soma ou tira votos.</p></div></div>
+          <div class="bridge" id="bridge"><div class="br-axis"><span class="br-ends"><span>Flávio ganha ←</span><span>→ Lula ganha</span></span></div><div class="br-row"><span>1º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div><div class="br-row"><span>Augusto Cury</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Renan Santos</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Ronaldo Caiado</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Demais</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Voltam a votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row"><span>Deixam de votar</span><span class="br-track"><span class="br-fill br-l" style="--w:0.00%"></span></span><span class="br-v">0</span></div><div class="br-row br-tot"><span>2º turno</span><span class="br-track"><span class="br-fill br-f" style="--w:50.00%"></span></span><span class="br-v">−2.224.965</span></div></div>
+        </section>
+        <div class="callout"><h4>Ponto de Virada</h4><p id="flip">Neste cenário Flávio vence por 2.224.965 votos. Mantidas as demais premissas, Lula precisaria de 61,9% da 3ª via (mesma fatia em todos os blocos, todos votando), ou de saldo líquido de 2.224.965 votos a mais entre quem volta a votar.</p></div>
+      </aside>
+    </div>
+    <section class="card flush" aria-labelledby="h-scenarios">
+      <div class="card-head"><div><h3 id="h-scenarios">Cenários Prontos</h3><p>3ª via × abstenção. Margem em votos a favor de Flávio; quem volta ou deixa de votar se divide 50-50.</p></div></div>
+      <div class="reel data-reel"><table class="tbl evidence-table scenario-table" id="scenarios">
+        <thead><tr><th>3ª Via</th><th>Abstenção</th><th class="num">Flávio %</th><th class="num">Lula %</th><th class="num">Margem em Votos</th><th class="num">Abstenção Absoluta</th><th class="num">Abstenção %</th></tr></thead>
+        <tbody><tr data-scenario="base-base"><td data-label="3ª Via">3ª via 50-50</td><td data-label="Abstenção">Neutra</td><td class="num" data-label="Flávio">50,93%</td><td class="num" data-label="Lula">49,07%</td><td class="num" data-label="Margem em Votos">2.224.965</td><td class="num" data-label="Abstenção Absoluta">33.469.244</td><td class="num" data-label="Abstenção %">21,08%</td></tr><tr data-scenario="base-y2022"><td data-label="3ª Via">3ª via 50-50</td><td data-label="Abstenção">Como 2022</td><td class="num" data-label="Flávio">50,93%</td><td class="num" data-label="Lula">49,07%</td><td class="num" data-label="Margem em Votos">2.224.965</td><td class="num" data-label="Abstenção Absoluta">32.890.465</td><td class="num" data-label="Abstenção %">20,72%</td></tr><tr data-scenario="base-avg"><td data-label="3ª Via">3ª via 50-50</td><td data-label="Abstenção">Média 2002–18</td><td class="num" data-label="Flávio">50,96%</td><td class="num" data-label="Lula">49,04%</td><td class="num" data-label="Margem em Votos">2.224.965</td><td class="num" data-label="Abstenção Absoluta">36.969.061</td><td class="num" data-label="Abstenção %">23,29%</td></tr><tr data-scenario="nexus-base"><td data-label="3ª Via">Nexus/BTG 13/10</td><td data-label="Abstenção">Neutra</td><td class="num" data-label="Flávio">51,37%</td><td class="num" data-label="Lula">48,63%</td><td class="num" data-label="Margem em Votos">3.210.690</td><td class="num" data-label="Abstenção Absoluta">33.469.244</td><td class="num" data-label="Abstenção %">21,08%</td></tr><tr data-scenario="nexus-y2022"><td data-label="3ª Via">Nexus/BTG 13/10</td><td data-label="Abstenção">Como 2022</td><td class="num" data-label="Flávio">51,36%</td><td class="num" data-label="Lula">48,64%</td><td class="num" data-label="Margem em Votos">3.210.690</td><td class="num" data-label="Abstenção Absoluta">32.890.465</td><td class="num" data-label="Abstenção %">20,72%</td></tr><tr data-scenario="nexus-avg"><td data-label="3ª Via">Nexus/BTG 13/10</td><td data-label="Abstenção">Média 2002–18</td><td class="num" data-label="Flávio">51,41%</td><td class="num" data-label="Lula">48,59%</td><td class="num" data-label="Margem em Votos">3.210.690</td><td class="num" data-label="Abstenção Absoluta">36.969.061</td><td class="num" data-label="Abstenção %">23,29%</td></tr><tr data-scenario="quaest-base"><td data-label="3ª Via">Quaest 03/10</td><td data-label="Abstenção">Neutra</td><td class="num" data-label="Flávio">51,96%</td><td class="num" data-label="Lula">48,04%</td><td class="num" data-label="Margem em Votos">4.540.728</td><td class="num" data-label="Abstenção Absoluta">33.469.244</td><td class="num" data-label="Abstenção %">21,08%</td></tr><tr data-scenario="quaest-y2022"><td data-label="3ª Via">Quaest 03/10</td><td data-label="Abstenção">Como 2022</td><td class="num" data-label="Flávio">51,95%</td><td class="num" data-label="Lula">48,05%</td><td class="num" data-label="Margem em Votos">4.540.728</td><td class="num" data-label="Abstenção Absoluta">32.890.465</td><td class="num" data-label="Abstenção %">20,72%</td></tr><tr data-scenario="quaest-avg"><td data-label="3ª Via">Quaest 03/10</td><td data-label="Abstenção">Média 2002–18</td><td class="num" data-label="Flávio">52,02%</td><td class="num" data-label="Lula">47,98%</td><td class="num" data-label="Margem em Votos">4.540.728</td><td class="num" data-label="Abstenção Absoluta">36.969.061</td><td class="num" data-label="Abstenção %">23,29%</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <!-- ============================================================ what Lula needs -->
+    <div class="cols print-stack">
+      <section class="card flush span-6" aria-labelledby="h-need-a">
+        <div class="card-head"><div><h3 id="h-need-a">Se a 3ª Via For Meio a Meio</h3><p>Fatia de Lula exigida entre quem volta a votar, para tirar 2.224.965 votos.</p></div></div>
+        <div class="reel data-reel">
+        <table class="tbl evidence-table">
+          <colgroup><col><col style="width:40%"></colgroup>
+          <thead><tr><th scope="col">Voltam a Votar</th><th class="num" scope="col">Lula Precisa De</th></tr></thead>
+          <tbody>
+            <tr><td>5 milhões</td><td class="num">72,2%</td></tr>
+            <tr><td>10 milhões</td><td class="num">61,1%</td></tr>
+            <tr><td>15 milhões</td><td class="num">57,4%</td></tr>
+            <tr><td>20 milhões</td><td class="num">55,6%</td></tr>
+            <tr><td>Todos os 33.469.244</td><td class="num">53,3%</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="card-foot"><span>50% + 2.224.965 ÷ (2 × quem volta), com ninguém deixando de votar</span></div>
+      </section>
+      <section class="card flush span-6" aria-labelledby="h-need-b">
+        <div class="card-head"><div><h3 id="h-need-b">Se a Abstenção For Neutra</h3><p>O que Lula precisa dos 9.316.747 votos da 3ª via.</p></div></div>
+        <div class="reel data-reel">
+        <table class="tbl evidence-table">
+          <colgroup><col><col style="width:22%"><col style="width:22%"></colgroup>
+          <thead><tr><th scope="col">Hipótese</th><th class="num" scope="col">Lula</th><th class="num" scope="col">Flávio</th></tr></thead>
+          <tbody>
+            <tr><td>Toda a 3ª via vota</td><td class="num">61,9%</td><td class="num">38,1%</td></tr>
+            <tr><td>Parte anula: vantagem sobre Flávio dentro da 3ª via</td><td class="num">+23,9 p.p.</td><td class="num">-</td></tr>
+            <tr><td>Divisão da Nexus/BTG: Flávio vence por 3.210.690</td><td class="num">48,6%</td><td class="num">51,4%</td></tr>
+            <tr><td>Divisão da Quaest: Flávio vence por 4.540.728</td><td class="num">48,0%</td><td class="num">52,0%</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="card-foot"><span>Duas primeiras linhas: fatia da 3ª via. Linhas de pesquisa: resultado final em % dos válidos, com Demais 50-50</span></div>
+      </section>
+    </div>
+
+    <!-- ============================================================ evidence -->
+    <div class="cols print-stack">
+      <section class="card flush history-card" aria-labelledby="h-history">
+        <div class="card-head"><div><h3 id="h-history">Resultados Oficiais por Eleição</h3><p>Presidência nos dois turnos, governadores nas 27 UFs e vagas do Senado. Selecione o ano.</p></div></div>
+        <div class="history-pad"><div class="tabset" role="group" aria-label="Eleição"><input type="radio" name="election-year" id="year-2026" aria-controls="history-2026" checked><input type="radio" name="election-year" id="year-2022" aria-controls="history-2022"><input type="radio" name="election-year" id="year-2018" aria-controls="history-2018"><input type="radio" name="election-year" id="year-2014" aria-controls="history-2014"><input type="radio" name="election-year" id="year-2010" aria-controls="history-2010"><input type="radio" name="election-year" id="year-2006" aria-controls="history-2006"><input type="radio" name="election-year" id="year-2002" aria-controls="history-2002"><div class="tabs year-tabs" aria-label="Ano da eleição"><label class="year-label" for="year-2026">2026</label><label class="year-label" for="year-2022">2022</label><label class="year-label" for="year-2018">2018</label><label class="year-label" for="year-2014">2014</label><label class="year-label" for="year-2010">2010</label><label class="year-label" for="year-2006">2006</label><label class="year-label" for="year-2002">2002</label></div><div class="panels history-panels"><section class="history-panel" id="history-2026" aria-labelledby="history-title-2026"><h3 class="history-year" id="history-title-2026">Eleição 2026</h3><div class="history-current"><div>        <div class="card-head"><div><h3 id="h-r1">1º Turno, Resultado Oficial</h3><p>TSE, 04/10/2026, 100% das seções apuradas.</p></div></div>
+        <div class="reel data-reel">
+        <table class="tbl evidence-table">
+          <colgroup><col><col style="width:30%"><col style="width:26%"></colgroup>
+          <thead><tr><th scope="col">Item</th><th class="num" scope="col">Votos</th><th class="num" scope="col">%</th></tr></thead>
+          <tbody>
+            <tr><td>Eleitorado</td><td class="num">158.745.502</td><td class="num">100,00</td></tr>
+            <tr><td>Comparecimento</td><td class="num">125.275.835</td><td class="num">78,92</td></tr>
+            <tr><td>Abstenção</td><td class="num">33.469.244</td><td class="num">21,08</td></tr>
+            <tr class="sub"><td>Brancos (% do comparecimento)</td><td class="num">2.300.798</td><td class="num">1,84</td></tr>
+            <tr class="sub"><td>Nulos (% do comparecimento)</td><td class="num">3.674.249</td><td class="num">2,93</td></tr>
+            <tr class="total"><td>Válidos</td><td class="num">119.300.788</td><td class="num">100,00</td></tr>
+            <tr><td>Flávio Bolsonaro (PL)</td><td class="num">56.104.503</td><td class="num">47,03</td></tr>
+            <tr><td>Lula (PT)</td><td class="num">53.879.538</td><td class="num">45,16</td></tr>
+            <tr><td>Augusto Cury (Avante)</td><td class="num">3.448.569</td><td class="num">2,89</td></tr>
+            <tr><td>Renan Santos (Missão)</td><td class="num">2.675.887</td><td class="num">2,24</td></tr>
+            <tr><td>Ronaldo Caiado (PSD)</td><td class="num">2.605.148</td><td class="num">2,18</td></tr>
+            <tr><td>Demais 7 candidatos</td><td class="num">587.143</td><td class="num">0,49</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="card-foot"><span>Válidos em % dos válidos. Demais: Zema 326.488; Samara 122.911; Hertz 43.103; Clariana 40.043; Edmilson 22.693; Grassi 16.881; Rui 15.024</span></div>
+      </div><div class="stack"><figure class="vote-figure" id="votes-2026-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">119.300.788 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:47.02777236%">47,03%</span><span class="vote-segment series-1" style="--share:45.16276791%">45,16%</span><span class="vote-segment series-2" style="--share:2.89065065%"></span><span class="vote-segment series-3" style="--share:4.91880909%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Flávio Bolsonaro"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Flávio Bolsonaro</span><span class="vote-pct">47,03%</span><span class="vote-count">56.104.503 votos</span></div><div class="vote-entry" data-candidate="Lula"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">45,16%</span><span class="vote-count">53.879.538 votos</span></div><div class="vote-entry" data-candidate="Augusto Cury"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Augusto Cury</span><span class="vote-pct">2,89%</span><span class="vote-count">3.448.569 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">4,92%</span><span class="vote-count">5.868.178 votos</span></div></div></figure><section class="governor-exhibit" aria-labelledby="gov-2026"><h4 id="gov-2026">Governadores · 2026</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 21/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 6/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-runoff" aria-label="AC: com 2º turno">AC</span><span class="uf-tile uf-first" aria-label="AL: eleito no 1º turno">AL</span><span class="uf-tile uf-runoff" aria-label="AM: com 2º turno">AM</span><span class="uf-tile uf-first" aria-label="AP: eleito no 1º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-first" aria-label="CE: eleito no 1º turno">CE</span><span class="uf-tile uf-runoff" aria-label="DF: com 2º turno">DF</span><span class="uf-tile uf-runoff" aria-label="ES: com 2º turno">ES</span><span class="uf-tile uf-first" aria-label="GO: eleito no 1º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-first" aria-label="MS: eleito no 1º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-first" aria-label="PA: eleito no 1º turno">PA</span><span class="uf-tile uf-first" aria-label="PB: eleito no 1º turno">PB</span><span class="uf-tile uf-first" aria-label="PE: eleito no 1º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-first" aria-label="PR: eleito no 1º turno">PR</span><span class="uf-tile uf-first" aria-label="RJ: eleito no 1º turno">RJ</span><span class="uf-tile uf-runoff" aria-label="RN: com 2º turno">RN</span><span class="uf-tile uf-first" aria-label="RO: eleito no 1º turno">RO</span><span class="uf-tile uf-first" aria-label="RR: eleito no 1º turno">RR</span><span class="uf-tile uf-first" aria-label="RS: eleito no 1º turno">RS</span><span class="uf-tile uf-first" aria-label="SC: eleito no 1º turno">SC</span><span class="uf-tile uf-first" aria-label="SE: eleito no 1º turno">SE</span><span class="uf-tile uf-first" aria-label="SP: eleito no 1º turno">SP</span><span class="uf-tile uf-runoff" aria-label="TO: com 2º turno">TO</span></div><p class="senate-note">Senado: 54 vagas, todas decididas no 1º turno</p></section></div></div></section><section class="history-panel" id="history-2022" aria-labelledby="history-title-2022"><h3 class="history-year" id="history-title-2022">Eleição 2022</h3><div class="history-rounds"><section class="history-round" aria-label="2022, 1º turno"><figure class="vote-figure" id="votes-2022-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">118.229.719 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:48.43071986%">48,43%</span><span class="vote-segment series-1" style="--share:43.19755255%">43,20%</span><span class="vote-segment series-2" style="--share:4.15751897%"></span><span class="vote-segment series-3" style="--share:4.21420861%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">48,43%</span><span class="vote-count">57.259.504 votos</span></div><div class="vote-entry" data-candidate="Jair Bolsonaro"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Jair Bolsonaro</span><span class="vote-pct">43,20%</span><span class="vote-count">51.072.345 votos</span></div><div class="vote-entry" data-candidate="Simone Tebet"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Simone Tebet</span><span class="vote-pct">4,16%</span><span class="vote-count">4.915.423 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">4,21%</span><span class="vote-count">4.982.447 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>156.454.011</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>123.682.372</span><small>79,05% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>32.770.982</span><small>20,95% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>5.452.653</span></dd></div></dl></section><section class="history-round" aria-label="2022, 2º turno"><figure class="vote-figure" id="votes-2022-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">118.552.353 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:50.90240512%">50,90%</span><span class="vote-segment series-1" style="--share:49.09759488%">49,10%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">50,90%</span><span class="vote-count">60.345.999 votos</span></div><div class="vote-entry" data-candidate="Jair Bolsonaro"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Jair Bolsonaro</span><span class="vote-pct">49,10%</span><span class="vote-count">58.206.354 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>156.454.011</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>124.252.796</span><small>79,42% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>32.200.558</span><small>20,58% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>5.700.443</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2022"><h4 id="gov-2022">Governadores · 2022</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 15/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 12/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-first" aria-label="AC: eleito no 1º turno">AC</span><span class="uf-tile uf-runoff" aria-label="AL: com 2º turno">AL</span><span class="uf-tile uf-runoff" aria-label="AM: com 2º turno">AM</span><span class="uf-tile uf-first" aria-label="AP: eleito no 1º turno">AP</span><span class="uf-tile uf-runoff" aria-label="BA: com 2º turno">BA</span><span class="uf-tile uf-first" aria-label="CE: eleito no 1º turno">CE</span><span class="uf-tile uf-first" aria-label="DF: eleito no 1º turno">DF</span><span class="uf-tile uf-runoff" aria-label="ES: com 2º turno">ES</span><span class="uf-tile uf-first" aria-label="GO: eleito no 1º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-runoff" aria-label="MS: com 2º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-first" aria-label="PA: eleito no 1º turno">PA</span><span class="uf-tile uf-runoff" aria-label="PB: com 2º turno">PB</span><span class="uf-tile uf-runoff" aria-label="PE: com 2º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-first" aria-label="PR: eleito no 1º turno">PR</span><span class="uf-tile uf-first" aria-label="RJ: eleito no 1º turno">RJ</span><span class="uf-tile uf-first" aria-label="RN: eleito no 1º turno">RN</span><span class="uf-tile uf-runoff" aria-label="RO: com 2º turno">RO</span><span class="uf-tile uf-first" aria-label="RR: eleito no 1º turno">RR</span><span class="uf-tile uf-runoff" aria-label="RS: com 2º turno">RS</span><span class="uf-tile uf-runoff" aria-label="SC: com 2º turno">SC</span><span class="uf-tile uf-runoff" aria-label="SE: com 2º turno">SE</span><span class="uf-tile uf-runoff" aria-label="SP: com 2º turno">SP</span><span class="uf-tile uf-first" aria-label="TO: eleito no 1º turno">TO</span></div><p class="senate-note">Senado: 27 vagas, todas decididas no 1º turno</p></section></section><section class="history-panel" id="history-2018" aria-labelledby="history-title-2018"><h3 class="history-year" id="history-title-2018">Eleição 2018</h3><div class="history-rounds"><section class="history-round" aria-label="2018, 1º turno"><figure class="vote-figure" id="votes-2018-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">107.050.749 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:46.03144813%">46,03%</span><span class="vote-segment series-1" style="--share:29.27775031%">29,28%</span><span class="vote-segment series-2" style="--share:12.46546253%"></span><span class="vote-segment series-3" style="--share:12.22533903%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Jair Bolsonaro"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Jair Bolsonaro</span><span class="vote-pct">46,03%</span><span class="vote-count">49.277.010 votos</span></div><div class="vote-entry" data-candidate="Fernando Haddad"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Fernando Haddad</span><span class="vote-pct">29,28%</span><span class="vote-count">31.342.051 votos</span></div><div class="vote-entry" data-candidate="Ciro Gomes"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Ciro Gomes</span><span class="vote-pct">12,47%</span><span class="vote-count">13.344.371 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">12,23%</span><span class="vote-count">13.087.317 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>147.306.295</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>117.364.654</span><small>79,67% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>29.941.171</span><small>20,33% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>10.313.159</span></dd></div></dl></section><section class="history-round" aria-label="2018, 2º turno"><figure class="vote-figure" id="votes-2018-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">104.838.753 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:55.13023128%">55,13%</span><span class="vote-segment series-1" style="--share:44.86976872%">44,87%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Jair Bolsonaro"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Jair Bolsonaro</span><span class="vote-pct">55,13%</span><span class="vote-count">57.797.847 votos</span></div><div class="vote-entry" data-candidate="Fernando Haddad"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Fernando Haddad</span><span class="vote-pct">44,87%</span><span class="vote-count">47.040.906 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>147.306.294</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>115.933.451</span><small>78,70% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>31.372.373</span><small>21,30% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>11.094.698</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2018"><h4 id="gov-2018">Governadores · 2018</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 13/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 14/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-first" aria-label="AC: eleito no 1º turno">AC</span><span class="uf-tile uf-first" aria-label="AL: eleito no 1º turno">AL</span><span class="uf-tile uf-runoff" aria-label="AM: com 2º turno">AM</span><span class="uf-tile uf-runoff" aria-label="AP: com 2º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-first" aria-label="CE: eleito no 1º turno">CE</span><span class="uf-tile uf-runoff" aria-label="DF: com 2º turno">DF</span><span class="uf-tile uf-first" aria-label="ES: eleito no 1º turno">ES</span><span class="uf-tile uf-first" aria-label="GO: eleito no 1º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-runoff" aria-label="MG: com 2º turno">MG</span><span class="uf-tile uf-runoff" aria-label="MS: com 2º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-runoff" aria-label="PA: com 2º turno">PA</span><span class="uf-tile uf-first" aria-label="PB: eleito no 1º turno">PB</span><span class="uf-tile uf-first" aria-label="PE: eleito no 1º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-first" aria-label="PR: eleito no 1º turno">PR</span><span class="uf-tile uf-runoff" aria-label="RJ: com 2º turno">RJ</span><span class="uf-tile uf-runoff" aria-label="RN: com 2º turno">RN</span><span class="uf-tile uf-runoff" aria-label="RO: com 2º turno">RO</span><span class="uf-tile uf-runoff" aria-label="RR: com 2º turno">RR</span><span class="uf-tile uf-runoff" aria-label="RS: com 2º turno">RS</span><span class="uf-tile uf-runoff" aria-label="SC: com 2º turno">SC</span><span class="uf-tile uf-runoff" aria-label="SE: com 2º turno">SE</span><span class="uf-tile uf-runoff" aria-label="SP: com 2º turno">SP</span><span class="uf-tile uf-first" aria-label="TO: eleito no 1º turno">TO</span></div><p class="senate-note">Senado: 54 vagas, todas decididas no 1º turno</p></section></section><section class="history-panel" id="history-2014" aria-labelledby="history-title-2014"><h3 class="history-year" id="history-title-2014">Eleição 2014</h3><div class="history-rounds"><section class="history-round" aria-label="2014, 1º turno"><figure class="vote-figure" id="votes-2014-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">104.023.802 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:41.59400749%">41,59%</span><span class="vote-segment series-1" style="--share:33.54733275%">33,55%</span><span class="vote-segment series-2" style="--share:21.31879298%">21,32%</span><span class="vote-segment series-3" style="--share:3.53986677%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Dilma"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Dilma</span><span class="vote-pct">41,59%</span><span class="vote-count">43.267.668 votos</span></div><div class="vote-entry" data-candidate="Aécio Neves"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Aécio Neves</span><span class="vote-pct">33,55%</span><span class="vote-count">34.897.211 votos</span></div><div class="vote-entry" data-candidate="Marina Silva"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Marina Silva</span><span class="vote-pct">21,32%</span><span class="vote-count">22.176.619 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">3,54%</span><span class="vote-count">3.682.304 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>142.822.046</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>115.122.883</span><small>80,61% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>27.698.475</span><small>19,39% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>11.099.081</span></dd></div></dl></section><section class="history-round" aria-label="2014, 2º turno"><figure class="vote-figure" id="votes-2014-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">105.542.273 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:51.63913610%">51,64%</span><span class="vote-segment series-1" style="--share:48.36086390%">48,36%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Dilma"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Dilma</span><span class="vote-pct">51,64%</span><span class="vote-count">54.501.118 votos</span></div><div class="vote-entry" data-candidate="Aécio Neves"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Aécio Neves</span><span class="vote-pct">48,36%</span><span class="vote-count">51.041.155 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>142.822.046</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>112.683.879</span><small>78,90% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>30.137.479</span><small>21,10% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>7.141.606</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2014"><h4 id="gov-2014">Governadores · 2014</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 12/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 15/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-runoff" aria-label="AC: com 2º turno">AC</span><span class="uf-tile uf-first" aria-label="AL: eleito no 1º turno">AL</span><span class="uf-tile uf-runoff" aria-label="AM: com 2º turno">AM</span><span class="uf-tile uf-runoff" aria-label="AP: com 2º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-runoff" aria-label="CE: com 2º turno">CE</span><span class="uf-tile uf-runoff" aria-label="DF: com 2º turno">DF</span><span class="uf-tile uf-first" aria-label="ES: eleito no 1º turno">ES</span><span class="uf-tile uf-runoff" aria-label="GO: com 2º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-runoff" aria-label="MS: com 2º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-runoff" aria-label="PA: com 2º turno">PA</span><span class="uf-tile uf-runoff" aria-label="PB: com 2º turno">PB</span><span class="uf-tile uf-first" aria-label="PE: eleito no 1º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-first" aria-label="PR: eleito no 1º turno">PR</span><span class="uf-tile uf-runoff" aria-label="RJ: com 2º turno">RJ</span><span class="uf-tile uf-runoff" aria-label="RN: com 2º turno">RN</span><span class="uf-tile uf-runoff" aria-label="RO: com 2º turno">RO</span><span class="uf-tile uf-runoff" aria-label="RR: com 2º turno">RR</span><span class="uf-tile uf-runoff" aria-label="RS: com 2º turno">RS</span><span class="uf-tile uf-first" aria-label="SC: eleito no 1º turno">SC</span><span class="uf-tile uf-first" aria-label="SE: eleito no 1º turno">SE</span><span class="uf-tile uf-first" aria-label="SP: eleito no 1º turno">SP</span><span class="uf-tile uf-runoff" aria-label="TO: com 2º turno">TO</span></div><p class="senate-note">Senado: 27 vagas, todas decididas no 1º turno</p></section></section><section class="history-panel" id="history-2010" aria-labelledby="history-title-2010"><h3 class="history-year" id="history-title-2010">Eleição 2010</h3><div class="history-rounds"><section class="history-round" aria-label="2010, 1º turno"><figure class="vote-figure" id="votes-2010-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">101.590.153 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:46.90556377%">46,91%</span><span class="vote-segment series-1" style="--share:32.61367566%">32,61%</span><span class="vote-segment series-2" style="--share:19.32899835%"></span><span class="vote-segment series-3" style="--share:1.15176222%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Dilma"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Dilma</span><span class="vote-pct">46,91%</span><span class="vote-count">47.651.434 votos</span></div><div class="vote-entry" data-candidate="José Serra"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">José Serra</span><span class="vote-pct">32,61%</span><span class="vote-count">33.132.283 votos</span></div><div class="vote-entry" data-candidate="Marina Silva"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Marina Silva</span><span class="vote-pct">19,33%</span><span class="vote-count">19.636.359 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">1,15%</span><span class="vote-count">1.170.077 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>135.804.433</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>111.193.747</span><small>81,88% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>24.610.296</span><small>18,12% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>9.603.594</span></dd></div></dl></section><section class="history-round" aria-label="2010, 2º turno"><figure class="vote-figure" id="votes-2010-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">99.463.917 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:56.05301971%">56,05%</span><span class="vote-segment series-1" style="--share:43.94698029%">43,95%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Dilma"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Dilma</span><span class="vote-pct">56,05%</span><span class="vote-count">55.752.529 votos</span></div><div class="vote-entry" data-candidate="José Serra"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">José Serra</span><span class="vote-pct">43,95%</span><span class="vote-count">43.711.388 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>135.804.433</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>106.606.214</span><small>78,50% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>29.197.152</span><small>21,50% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>7.142.025</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2010"><h4 id="gov-2010">Governadores · 2010</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 18/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 9/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-first" aria-label="AC: eleito no 1º turno">AC</span><span class="uf-tile uf-runoff" aria-label="AL: com 2º turno">AL</span><span class="uf-tile uf-first" aria-label="AM: eleito no 1º turno">AM</span><span class="uf-tile uf-runoff" aria-label="AP: com 2º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-first" aria-label="CE: eleito no 1º turno">CE</span><span class="uf-tile uf-runoff" aria-label="DF: com 2º turno">DF</span><span class="uf-tile uf-first" aria-label="ES: eleito no 1º turno">ES</span><span class="uf-tile uf-runoff" aria-label="GO: com 2º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-first" aria-label="MS: eleito no 1º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-runoff" aria-label="PA: com 2º turno">PA</span><span class="uf-tile uf-runoff" aria-label="PB: com 2º turno">PB</span><span class="uf-tile uf-first" aria-label="PE: eleito no 1º turno">PE</span><span class="uf-tile uf-runoff" aria-label="PI: com 2º turno">PI</span><span class="uf-tile uf-first" aria-label="PR: eleito no 1º turno">PR</span><span class="uf-tile uf-first" aria-label="RJ: eleito no 1º turno">RJ</span><span class="uf-tile uf-first" aria-label="RN: eleito no 1º turno">RN</span><span class="uf-tile uf-runoff" aria-label="RO: com 2º turno">RO</span><span class="uf-tile uf-runoff" aria-label="RR: com 2º turno">RR</span><span class="uf-tile uf-first" aria-label="RS: eleito no 1º turno">RS</span><span class="uf-tile uf-first" aria-label="SC: eleito no 1º turno">SC</span><span class="uf-tile uf-first" aria-label="SE: eleito no 1º turno">SE</span><span class="uf-tile uf-first" aria-label="SP: eleito no 1º turno">SP</span><span class="uf-tile uf-first" aria-label="TO: eleito no 1º turno">TO</span></div><p class="senate-note">Senado: 54 vagas, todas decididas no 1º turno</p></section></section><section class="history-panel" id="history-2006" aria-labelledby="history-title-2006"><h3 class="history-year" id="history-title-2006">Eleição 2006</h3><div class="history-rounds"><section class="history-round" aria-label="2006, 1º turno"><figure class="vote-figure" id="votes-2006-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">95.996.733 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:48.60828441%">48,61%</span><span class="vote-segment series-1" style="--share:41.63513460%">41,64%</span><span class="vote-segment series-2" style="--share:6.84960081%"></span><span class="vote-segment series-3" style="--share:2.90698018%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">48,61%</span><span class="vote-count">46.662.365 votos</span></div><div class="vote-entry" data-candidate="Geraldo Alckmin"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Geraldo Alckmin</span><span class="vote-pct">41,64%</span><span class="vote-count">39.968.369 votos</span></div><div class="vote-entry" data-candidate="Heloísa Helena"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Heloísa Helena</span><span class="vote-pct">6,85%</span><span class="vote-count">6.575.393 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">2,91%</span><span class="vote-count">2.790.606 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>125.913.235</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>104.820.459</span><small>83,25% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>21.092.675</span><small>16,75% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>8.823.726</span></dd></div></dl></section><section class="history-round" aria-label="2006, 2º turno"><figure class="vote-figure" id="votes-2006-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">95.838.220 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:60.82650742%">60,83%</span><span class="vote-segment series-1" style="--share:39.17349258%">39,17%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">60,83%</span><span class="vote-count">58.295.042 votos</span></div><div class="vote-entry" data-candidate="Geraldo Alckmin"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">Geraldo Alckmin</span><span class="vote-pct">39,17%</span><span class="vote-count">37.543.178 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>125.913.235</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>101.998.221</span><small>81,01% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>23.914.714</span><small>18,99% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>6.160.001</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2006"><h4 id="gov-2006">Governadores · 2006</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 17/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 10/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-first" aria-label="AC: eleito no 1º turno">AC</span><span class="uf-tile uf-first" aria-label="AL: eleito no 1º turno">AL</span><span class="uf-tile uf-first" aria-label="AM: eleito no 1º turno">AM</span><span class="uf-tile uf-first" aria-label="AP: eleito no 1º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-first" aria-label="CE: eleito no 1º turno">CE</span><span class="uf-tile uf-first" aria-label="DF: eleito no 1º turno">DF</span><span class="uf-tile uf-first" aria-label="ES: eleito no 1º turno">ES</span><span class="uf-tile uf-runoff" aria-label="GO: com 2º turno">GO</span><span class="uf-tile uf-runoff" aria-label="MA: com 2º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-first" aria-label="MS: eleito no 1º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-runoff" aria-label="PA: com 2º turno">PA</span><span class="uf-tile uf-runoff" aria-label="PB: com 2º turno">PB</span><span class="uf-tile uf-runoff" aria-label="PE: com 2º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-runoff" aria-label="PR: com 2º turno">PR</span><span class="uf-tile uf-runoff" aria-label="RJ: com 2º turno">RJ</span><span class="uf-tile uf-runoff" aria-label="RN: com 2º turno">RN</span><span class="uf-tile uf-first" aria-label="RO: eleito no 1º turno">RO</span><span class="uf-tile uf-first" aria-label="RR: eleito no 1º turno">RR</span><span class="uf-tile uf-runoff" aria-label="RS: com 2º turno">RS</span><span class="uf-tile uf-runoff" aria-label="SC: com 2º turno">SC</span><span class="uf-tile uf-first" aria-label="SE: eleito no 1º turno">SE</span><span class="uf-tile uf-first" aria-label="SP: eleito no 1º turno">SP</span><span class="uf-tile uf-first" aria-label="TO: eleito no 1º turno">TO</span></div><p class="senate-note">Senado: 27 vagas, todas decididas no 1º turno</p></section></section><section class="history-panel" id="history-2002" aria-labelledby="history-title-2002"><h3 class="history-year" id="history-title-2002">Eleição 2002</h3><div class="history-rounds"><section class="history-round" aria-label="2002, 1º turno"><figure class="vote-figure" id="votes-2002-t1"><figcaption><h4>1º Turno</h4><p class="vote-caption">84.952.512 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:46.44386855%">46,44%</span><span class="vote-segment series-1" style="--share:23.19583557%">23,20%</span><span class="vote-segment series-2" style="--share:17.86892070%"></span><span class="vote-segment series-3" style="--share:12.49137518%"></span></div><div class="vote-legend"><div class="vote-entry" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">46,44%</span><span class="vote-count">39.455.233 votos</span></div><div class="vote-entry" data-candidate="José Serra"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">José Serra</span><span class="vote-pct">23,20%</span><span class="vote-count">19.705.445 votos</span></div><div class="vote-entry" data-candidate="Garotinho"><i class="vote-key series-2" aria-hidden="true"></i><span class="vote-name">Garotinho</span><span class="vote-pct">17,87%</span><span class="vote-count">15.180.097 votos</span></div><div class="vote-entry" data-candidate="Outros"><i class="vote-key series-3" aria-hidden="true"></i><span class="vote-name">Outros</span><span class="vote-pct">12,49%</span><span class="vote-count">10.611.737 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>115.253.816</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>94.805.583</span><small>82,26% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>20.448.233</span><small>17,74% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>9.850.438</span></dd></div></dl></section><section class="history-round" aria-label="2002, 2º turno"><figure class="vote-figure" id="votes-2002-t2"><figcaption><h4>2º Turno</h4><p class="vote-caption">86.164.103 votos válidos</p></figcaption><div class="vote-bar" aria-hidden="true"><span class="vote-segment series-0" style="--share:61.27071734%">61,27%</span><span class="vote-segment series-1" style="--share:38.72928266%">38,73%</span></div><div class="vote-legend"><div class="vote-entry vote-winner" data-candidate="Lula"><i class="vote-key series-0" aria-hidden="true"></i><span class="vote-name">Lula</span><span class="vote-pct">61,27%</span><span class="vote-count">52.793.364 votos</span></div><div class="vote-entry" data-candidate="José Serra"><i class="vote-key series-1" aria-hidden="true"></i><span class="vote-name">José Serra</span><span class="vote-pct">38,73%</span><span class="vote-count">33.370.739 votos</span></div></div></figure><dl class="round-metrics"><div class="round-metric" data-metric="aptos"><dt>Eleitorado</dt><dd><span>115.253.816</span></dd></div><div class="round-metric" data-metric="comparecimento"><dt>Comparecimento</dt><dd><span>91.664.259</span><small>79,53% dos aptos</small></dd></div><div class="round-metric" data-metric="abstencao"><dt>Abstenção</dt><dd><span>23.589.188</span><small>20,47% dos aptos</small></dd></div><div class="round-metric" data-metric="brancos-nulos"><dt>Brancos + Nulos</dt><dd><span>5.499.898</span></dd></div></dl></section></div><section class="governor-exhibit" aria-labelledby="gov-2002"><h4 id="gov-2002">Governadores · 2002</h4><div class="uf-legend"><span><i class="vote-key uf-first" aria-hidden="true"></i>Eleitos no 1º turno: 13/27</span><span><i class="vote-key uf-runoff" aria-hidden="true"></i>Com 2º turno: 14/27</span></div><div class="uf-grid" aria-label="27 unidades da federação, em ordem alfabética"><span class="uf-tile uf-first" aria-label="AC: eleito no 1º turno">AC</span><span class="uf-tile uf-first" aria-label="AL: eleito no 1º turno">AL</span><span class="uf-tile uf-first" aria-label="AM: eleito no 1º turno">AM</span><span class="uf-tile uf-runoff" aria-label="AP: com 2º turno">AP</span><span class="uf-tile uf-first" aria-label="BA: eleito no 1º turno">BA</span><span class="uf-tile uf-runoff" aria-label="CE: com 2º turno">CE</span><span class="uf-tile uf-runoff" aria-label="DF: com 2º turno">DF</span><span class="uf-tile uf-first" aria-label="ES: eleito no 1º turno">ES</span><span class="uf-tile uf-first" aria-label="GO: eleito no 1º turno">GO</span><span class="uf-tile uf-first" aria-label="MA: eleito no 1º turno">MA</span><span class="uf-tile uf-first" aria-label="MG: eleito no 1º turno">MG</span><span class="uf-tile uf-runoff" aria-label="MS: com 2º turno">MS</span><span class="uf-tile uf-first" aria-label="MT: eleito no 1º turno">MT</span><span class="uf-tile uf-runoff" aria-label="PA: com 2º turno">PA</span><span class="uf-tile uf-runoff" aria-label="PB: com 2º turno">PB</span><span class="uf-tile uf-first" aria-label="PE: eleito no 1º turno">PE</span><span class="uf-tile uf-first" aria-label="PI: eleito no 1º turno">PI</span><span class="uf-tile uf-runoff" aria-label="PR: com 2º turno">PR</span><span class="uf-tile uf-first" aria-label="RJ: eleito no 1º turno">RJ</span><span class="uf-tile uf-runoff" aria-label="RN: com 2º turno">RN</span><span class="uf-tile uf-runoff" aria-label="RO: com 2º turno">RO</span><span class="uf-tile uf-runoff" aria-label="RR: com 2º turno">RR</span><span class="uf-tile uf-runoff" aria-label="RS: com 2º turno">RS</span><span class="uf-tile uf-runoff" aria-label="SC: com 2º turno">SC</span><span class="uf-tile uf-runoff" aria-label="SE: com 2º turno">SE</span><span class="uf-tile uf-runoff" aria-label="SP: com 2º turno">SP</span><span class="uf-tile uf-first" aria-label="TO: eleito no 1º turno">TO</span></div><p class="senate-note">Senado: 54 vagas, todas decididas no 1º turno</p></section></section></div></div></div>
+        <div class="card-foot"><span>TSE, Dados Abertos: votação para presidente, governadores e Senado, 2002–2022; resultados oficiais de 2026. Governadores com 2º turno identificados pela votação do turno, inclusive GO em 2014. Percentuais sobre votos válidos; brancos e nulos somados sem incluir votos anulados após a eleição.</span></div>
+      </section>
+      <section class="card flush" aria-labelledby="h-polls">
+        <div class="card-head"><div><h3 id="h-polls">Pesquisas de 2º Turno Após o 1º</h3><p>% dos votos válidos, pela data de divulgação.</p></div></div>
+        <div class="reel data-reel">
+          <table class="tbl evidence-table">
+            <colgroup><col><col style="width:22%"><col style="width:18%"><col style="width:16%"><col style="width:16%"></colgroup>
+            <thead><tr><th scope="col">Instituto</th><th scope="col">Campo</th><th class="num" scope="col">Amostra</th><th class="num" scope="col">Flávio</th><th class="num" scope="col">Lula</th></tr></thead>
+            <tbody>
+              <tr><td>Gerp</td><td>08–12/10</td><td class="num">2.400</td><td class="num">55,0</td><td class="num">45,0</td></tr>
+              <tr><td>PoderData</td><td>10–12/10</td><td class="num">3.000</td><td class="num">51,0</td><td class="num">49,0</td></tr>
+              <tr><td>Nexus/BTG</td><td>10–12/10</td><td class="num">2.002</td><td class="num">52,0</td><td class="num">48,0</td></tr>
+              <tr><td>Futura</td><td>07–10/10</td><td class="num">2.000</td><td class="num">51,8</td><td class="num">48,2</td></tr>
+              <tr><td>DataTrends</td><td>07–09/10</td><td class="num">2.000</td><td class="num">53,1</td><td class="num">46,9</td></tr>
+              <tr><td>Ipespe</td><td>06–08/10</td><td class="num">1.500</td><td class="num">52,7</td><td class="num">47,3</td></tr>
+              <tr><td>AtlasIntel</td><td>03–08/10</td><td class="num">5.026</td><td class="num">52,8</td><td class="num">47,2</td></tr>
+              <tr><td>Datafolha</td><td>06–07/10</td><td class="num">2.520</td><td class="num">52,0</td><td class="num">48,0</td></tr>
+              <tr><td>PoderData</td><td>05–07/10</td><td class="num">3.000</td><td class="num">53,0</td><td class="num">47,0</td></tr>
+              <tr class="total"><td>Agregado do painel, 14/10</td><td>Intervalo 80%: 48,6–55,9</td><td class="num">-</td><td class="num">52,3</td><td class="num">47,7</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-foot"><span>Chance de vitória de Flávio no agregado: 79%. Rejeição média (7 pesquisas): Flávio 44,9%, Lula 48,8%. Vox Brasil (09/10) só publicou votos totais: Flávio 42,7%, Lula 44,2%, indecisos 9,7%</span></div>
+      </section>
+    </div>
+
+    <section class="card flush" aria-labelledby="h-agenda">
+      <div class="card-head"><div><h3 id="h-agenda">Próximas Pesquisas e Debates</h3><p>Agenda até o 2º turno. Toda pesquisa precisa ser registrada no TSE 5 dias antes de sair: as próximas aparecem antes no <a href="https://pesqele-divulgacao.tse.jus.br/" target="_blank" rel="noopener">PesqEle (TSE)</a>.</p></div></div>
+      <div class="reel">
+        <table class="tbl agenda">
+          <colgroup><col style="width:18%"><col><col style="width:34%"></colgroup>
+          <thead><tr><th scope="col">Data</th><th scope="col">Evento</th><th scope="col">Referência</th></tr></thead>
+          <tbody>
+            <tr><td>Qua 14/10</td><td>Pesquisa Quaest (campo 10–13/10, 2.154 entrevistas)</td><td>Quaest anterior (03/10) era de 1º turno</td></tr>
+            <tr><td>Qui 15/10</td><td>Pesquisa Datafolha (campo 13–15/10, 2.520 entrevistas); debate em pool (CNN, SBT, Metrópoles e outros) cancelado</td><td>Datafolha anterior (6–7/10): Flávio 52 x 48 dos válidos</td></tr>
+            <tr><td>Dom 18/10</td><td>Debate Band (20h ou 21h: fontes divergem)</td><td>-</td></tr>
+            <tr><td>Seg 19/10 a Qui 22/10</td><td>Novas rodadas de PoderData, AtlasIntel e Nexus (saem quase toda semana; datas não anunciadas)</td><td>Registro no TSE 5 dias antes da divulgação</td></tr>
+            <tr><td>Sex 23/10</td><td>Debate Globo, o último; fim do horário eleitoral</td><td>-</td></tr>
+            <tr><td>Sáb 24/10</td><td>Últimas pesquisas (Datafolha, Quaest e AtlasIntel costumam sair na véspera)</td><td>Registro exige 5 dias: prazo em 19/10</td></tr>
+            <tr class="total"><td>Dom 25/10</td><td>2º turno (urnas fecham às 17h)</td><td>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-foot"><span>Datas da agenda do material EWZ e 2º turno (imprensa, 06–13/10/2026); confirmar no PesqEle antes de cada divulgação</span></div>
+    </section>
+
+    <section class="card flush" aria-labelledby="h-tv">
+      <div class="card-head"><div><h3 id="h-tv">Para Onde Vai a 3ª Via</h3><p>Voto no 2º turno declarado pelo eleitor de cada candidato do 1º turno, % do grupo.</p></div></div>
+      <div class="reel data-reel">
+        <table class="tbl evidence-table group-table">
+          <colgroup><col><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:11%"><col style="width:13%"></colgroup>
+          <thead>
+            <tr><th scope="col" rowspan="2">Eleitor de</th><th class="group-label-cell group-start" scope="colgroup" colspan="4">Nexus/BTG, campo 10–12/10</th><th class="group-label-cell group-start" scope="colgroup" colspan="3">Quaest, divulgada 03/10</th></tr>
+            <tr><th class="group-start num" scope="col">Flávio</th><th class="num" scope="col">Lula</th><th class="num" scope="col">Branco/Nulo</th><th class="num" scope="col">Não Sabe</th><th class="group-start num" scope="col">Flávio</th><th class="num" scope="col">Lula</th><th class="num" scope="col">Branco/Nulo/Não Vota</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ronaldo Caiado</td><td class="group-start num">55</td><td class="num">27</td><td class="num">11</td><td class="num">7</td><td class="group-start num">43</td><td class="num">19</td><td class="num">36</td></tr>
+            <tr><td>Renan Santos</td><td class="group-start num">37</td><td class="num">30</td><td class="num">33</td><td class="num">-</td><td class="group-start num">60</td><td class="num">11</td><td class="num">27</td></tr>
+            <tr><td>Augusto Cury</td><td class="group-start num">43</td><td class="num">41</td><td class="num">13</td><td class="num">4</td><td class="group-start num">34</td><td class="num">23</td><td class="num">41</td></tr>
+            <tr><td>Romeu Zema</td><td class="group-start num">80</td><td class="num">0</td><td class="num">12</td><td class="num">8</td><td class="group-start num">-</td><td class="num">-</td><td class="num">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-foot"><span>Nexus/BTG: 2.002 entrevistas por telefone, margem 2 p.p., BR-07997/2026. Quaest: pergunta de 2º turno feita na véspera do 1º. Nenhuma das duas informa os demais candidatos nem quem se absteve</span></div>
+    </section>
+
+    <section class="card flush" aria-labelledby="h-abs">
+      <div class="card-head"><div><h3 id="h-abs">Abstenção nas Eleições Presidenciais</h3><p>Eleitores aptos que não votaram, em número e em % do eleitorado. Em cinco dos seis 2º turnos desde 2002, a abstenção subiu. Governadores: contagens entre 27 UFs.</p></div></div>
+      <div class="reel data-reel">
+        <table class="tbl evidence-table group-table abstention-table">
+          
+          <thead>
+            <tr><th scope="col" rowspan="2">Ano</th><th class="num" scope="col" rowspan="2">Eleitorado</th><th class="group-label-cell group-start" scope="colgroup" colspan="2">1º Turno</th><th class="group-label-cell group-start" scope="colgroup" colspan="2">2º Turno</th><th class="group-label-cell group-start" scope="colgroup" colspan="2">Variação</th><th class="group-label-cell group-start" scope="colgroup" colspan="2">Governadores</th></tr>
+            <tr><th class="group-start num" scope="col">Abstenção</th><th class="num" scope="col">%</th><th class="group-start num" scope="col">Abstenção</th><th class="num" scope="col">%</th><th class="group-start num" scope="col">Eleitores</th><th class="num" scope="col">p.p.</th><th class="group-start num" scope="col">Eleitos no<br>1º T</th><th class="num" scope="col">Com 2º<br>Turno</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1998</td><td class="num">106.100.575</td><td class="group-start num">22.802.802</td><td class="num">21,49</td><td class="group-start num">-</td><td class="num">-</td><td class="group-start num">-</td><td class="num">-</td><td class="group-start num">-</td><td class="num">-</td></tr>
+            <tr><td>2002</td><td class="num">115.253.816</td><td class="group-start num">20.448.233</td><td class="num">17,74</td><td class="group-start num">23.589.188</td><td class="num">20,47</td><td class="group-start num">+3.140.955</td><td class="num">+2,73</td><td class="group-start num" data-governor="2002-first">13</td><td class="num" data-governor="2002-runoff">14</td></tr>
+            <tr><td>2006</td><td class="num">125.913.235</td><td class="group-start num">21.092.675</td><td class="num">16,75</td><td class="group-start num">23.914.714</td><td class="num">18,99</td><td class="group-start num">+2.822.039</td><td class="num">+2,24</td><td class="group-start num" data-governor="2006-first">17</td><td class="num" data-governor="2006-runoff">10</td></tr>
+            <tr><td>2010</td><td class="num">135.804.433</td><td class="group-start num">24.610.296</td><td class="num">18,12</td><td class="group-start num">29.197.152</td><td class="num">21,50</td><td class="group-start num">+4.586.856</td><td class="num">+3,38</td><td class="group-start num" data-governor="2010-first">18</td><td class="num" data-governor="2010-runoff">9</td></tr>
+            <tr><td>2014</td><td class="num">142.822.046</td><td class="group-start num">27.698.475</td><td class="num">19,39</td><td class="group-start num">30.137.479</td><td class="num">21,10</td><td class="group-start num">+2.439.004</td><td class="num">+1,71</td><td class="group-start num" data-governor="2014-first">12</td><td class="num" data-governor="2014-runoff">15</td></tr>
+            <tr><td>2018</td><td class="num">147.306.295</td><td class="group-start num">29.941.171</td><td class="num">20,33</td><td class="group-start num">31.372.373</td><td class="num">21,30</td><td class="group-start num">+1.431.202</td><td class="num">+0,97</td><td class="group-start num" data-governor="2018-first">13</td><td class="num" data-governor="2018-runoff">14</td></tr>
+            <tr><td>2022</td><td class="num">156.454.011</td><td class="group-start num">32.770.982</td><td class="num">20,95</td><td class="group-start num">32.200.558</td><td class="num">20,58</td><td class="group-start num">−570.424</td><td class="num">−0,36</td><td class="group-start num" data-governor="2022-first">15</td><td class="num" data-governor="2022-runoff">12</td></tr>
+            <tr class="total"><td>2026</td><td class="num">158.745.502</td><td class="group-start num">33.469.244</td><td class="num">21,08</td><td class="group-start num">25/10</td><td class="num">-</td><td class="group-start num">-</td><td class="num">-</td><td class="group-start num" data-governor="2026-first">21</td><td class="num" data-governor="2026-runoff">6</td></tr>
+            <tr class="sub"><td>Se repetir 2022</td><td class="num">-</td><td class="group-start num">-</td><td class="num">-</td><td class="group-start num">32.890.465</td><td class="num">20,72</td><td class="group-start num">−578.779</td><td class="num">−0,36</td><td class="group-start num">-</td><td class="num">-</td></tr>
+            <tr class="sub"><td>Média 2002–2018</td><td class="num">-</td><td class="group-start num">-</td><td class="num">-</td><td class="group-start num">36.969.061</td><td class="num">23,29</td><td class="group-start num">+3.499.817</td><td class="num">+2,20</td><td class="group-start num">-</td><td class="num">-</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-foot"><span>1998 decidida no 1º turno (FHC). % calculado sobre aptos a partir dos arquivos do TSE; o TSE divulgou 20,59% para 2022 no 2º turno. Algumas centenas de eleitores por turno ficam em seções não instaladas e não entram em nenhuma conta<br>2026: 2º turno para governador em AC, AM, DF, ES, RN e TO, o menor número da série.</span></div>
+    </section>
+
+    <div class="cols print-stack">
+      <details class="disclosure span-6" open>
+        <summary>Método do Simulador</summary>
+        <div class="body">Votos de Lula no 2º turno = 53.879.538 do 1º turno + soma de (votos de cada bloco da 3ª via × % Lula) + quem volta a votar × % Lula − quem deixa de votar × % que era de Lula. Flávio é simétrico, a partir de 56.104.503. O % de cada um é sobre a soma dos dois (votos válidos). Abstenção no 2º turno = 33.469.244 + quem deixa de votar − quem volta, sobre 158.745.502 eleitores. A parte da 3ª via que não escolhe ninguém vira branco ou nulo e não muda a abstenção; os 5.975.047 brancos e nulos do 1º turno ficam fora. Com divisão 50-50, os fluxos de abstenção mudam o comparecimento e não a margem: só o desequilíbrio entre os dois candidatos move o resultado. O ponto de virada supõe a mesma fatia de Lula em todos os blocos da 3ª via, todos votando.</div>
+      </details>
+      <details class="disclosure span-6" open>
+        <summary>Fontes</summary>
+        <div class="body">Votação 2026: TSE, resultados.tse.jus.br, eleição 6257, arquivo br-c0001-e006257-u.json, gerado em 05/10/2026 12:51. Abstenção 1998–2022: TSE, Dados Abertos, detalhe_votacao_munzona, cargo Presidente, todas as UFs e exterior. Pesquisas de 2º turno e agregado: painel eleicoes.luciamees.com (agregador.json, gerado em 14/10/2026 07:28 UTC), que lista a fonte de cada pesquisa. Transferência da 3ª via: Nexus/BTG via ncnews.com.br (13/10/2026); Quaest via Jornal Opção (06/10/2026).</div>
+      </details>
+    </div>
+  </main>
+  <div class="phone-result" aria-live="polite"><strong id="phone-lead">Flávio na frente por 2.224.965</strong><span>Flávio <output id="phone-f">50,93%</output></span><span>Lula <output id="phone-l">49,07%</output></span></div>
+</div>
+<script>
+// Second-round simulator: one model shared by the page and by build.py (which prints the default state
+// into the HTML, so the page reads complete without JavaScript). Vote counts are TSE, 1st round 2026.
+var MODEL = (function () {
+  'use strict';
+  var F1 = 56104503, L1 = 53879538, ABST = 33469244, ELEIT = 158745502;
+  var BLOCKS = [
+    { k: 'cury', nm: 'Augusto Cury', v: 3448569 },
+    { k: 'renan', nm: 'Renan Santos', v: 2675887 },
+    { k: 'caiado', nm: 'Ronaldo Caiado', v: 2605148 },
+    { k: 'demais', nm: 'Demais', v: 587143 }
+  ];
+  var TV = BLOCKS.reduce(function (s, b) { return s + b.v; }, 0);
+  // Presets: Lula / Flávio % of each block. Demais stays 50-50: neither poll reports it.
+  var TV_PRESETS = {
+    base: { cury: [50, 50], renan: [50, 50], caiado: [50, 50], demais: [50, 50] },
+    nexus: { cury: [41, 43], renan: [30, 37], caiado: [27, 55], demais: [50, 50] },
+    quaest: { cury: [23, 34], renan: [11, 60], caiado: [19, 43], demais: [50, 50] }
+  };
+  // Abstention presets in voters: 2022 (−0.36 pp) and the 2002–2018 mean (+2.20 pp) applied to 2026.
+  var AB_PRESETS = { base: { ret: 0, out: 0 }, y2022: { ret: 578779, out: 0 }, avg: { ret: 0, out: 3499817 } };
+
+  function defaults() {
+    var tv = {};
+    BLOCKS.forEach(function (b) { tv[b.k] = TV_PRESETS.base[b.k].slice(); });
+    return { tv: tv, ret: 0, retL: 50, out: 0, outL: 50 };
+  }
+
+  function compute(st) {
+    var steps = [{ nm: '1º turno', d: L1 - F1 }], L = L1, F = F1, tvL = 0, tvF = 0;
+    BLOCKS.forEach(function (b) {
+      var l = b.v * st.tv[b.k][0] / 100, f = b.v * st.tv[b.k][1] / 100;
+      L += l; F += f; tvL += l; tvF += f;
+      steps.push({ nm: b.nm, d: l - f });
+    });
+    var rl = st.ret * st.retL / 100, rf = st.ret - rl, ol = st.out * st.outL / 100, of = st.out - ol;
+    L += rl - ol; F += rf - of;
+    steps.push({ nm: 'Voltam a votar', d: rl - rf });
+    steps.push({ nm: 'Deixam de votar', d: of - ol });
+    var abst = ABST + st.out - st.ret;
+    // Flip point: one Lula share s for every 3rd-way block, all voting, other inputs fixed.
+    var Lx = L - tvL, Fx = F - tvF, s = 0.5 + (Fx - Lx) / (2 * TV);
+    return { L: L, F: F, m: L - F, val: L + F, abst: abst, steps: steps, tvL: tvL, tvF: tvF, flip: s };
+  }
+
+  var MINUS = '−';
+  function int(v) { var r = Math.round(v); return (r < 0 ? MINUS : '') + Math.abs(r).toLocaleString('pt-BR'); }
+  function sint(v) { var r = Math.round(v); return (r > 0 ? '+' : '') + int(r); }
+  function pct(v, d) { return (v < 0 ? MINUS : '') + Math.abs(v).toFixed(d === undefined ? 1 : d).replace('.', ',') + '%'; }
+  function mi(v) { return (v / 1e6).toFixed(2).replace('.', ',') + ' mi (' + int(v) + ')'; }
+
+  function view(st) {
+    var r = compute(st), win = r.m > 0 ? 'Lula' : 'Flávio';
+    var dpp = (r.abst / ELEIT - ABST / ELEIT) * 100;
+    var max = Math.max.apply(null, r.steps.map(function (x) { return Math.abs(x.d); }).concat([Math.abs(r.m), 1]));
+    function row(nm, d, total) {
+      var w = (Math.abs(d) / max * 50).toFixed(2) + '%', side = d < 0 ? 'f' : 'l';
+      return '<div class="br-row' + (total ? ' br-tot' : '') + '"><span>' + nm + '</span><span class="br-track"><span class="br-fill br-' + side +
+        '" style="--w:' + w + '"></span></span><span class="br-v">' + sint(d) + '</span></div>';
+    }
+    var bridge = r.steps.map(function (x) { return row(x.nm, x.d); }).join('') + row('2º turno', r.m, true);
+    var s = r.flip * 100, flip;
+    if (r.m > 0) flip = 'Neste cenário Lula vence por ' + int(r.m) + ' votos. Ele perderia a vantagem se, mantidas as demais premissas, ficasse com menos de ' + pct(Math.max(s, 0)) + ' da 3ª via.';
+    else if (s > 100) flip = 'Neste cenário Flávio vence por ' + int(-r.m) + ' votos, e nem 100% da 3ª via bastaria para Lula. Ele precisaria de saldo líquido de ' + int(-r.m) + ' votos a mais entre quem volta a votar.';
+    else flip = 'Neste cenário Flávio vence por ' + int(-r.m) + ' votos. Mantidas as demais premissas, Lula precisaria de ' + pct(s) + ' da 3ª via (mesma fatia em todos os blocos, todos votando), ou de saldo líquido de ' + int(-r.m) + ' votos a mais entre quem volta a votar.';
+    return {
+      f_class: r.m < 0 ? 'pos' : '', l_class: r.m > 0 ? 'pos' : '',
+      f_pct_class: r.m < 0 ? 'pos' : r.m > 0 ? 'neg' : '', l_pct_class: r.m > 0 ? 'pos' : r.m < 0 ? 'neg' : '',
+      live: win + ' na frente por ' + int(Math.abs(r.m)),
+      f: int(r.F), f_p: pct(r.F / r.val * 100, 2), l: int(r.L), l_p: pct(r.L / r.val * 100, 2),
+      m: int(Math.abs(r.m)), m_p: win, m_c: pct(Math.abs(r.m) / r.val * 100, 2).replace('%', ' p.p.') + ' dos válidos entre os dois',
+      a: int(r.abst), a_p: pct(r.abst / ELEIT * 100, 2), a_c: (dpp === 0 ? 'Igual ao 1º turno' : (dpp > 0 ? '+' : '') + pct(dpp, 2).replace('%', ' p.p.') + ' vs. 1º turno (' + sint(r.abst - ABST) + ')'),
+      tv_l: int(r.tvL), tv_f: int(r.tvF), tv_n: int(TV - r.tvL - r.tvF),
+      ret_o: mi(st.ret), out_o: mi(st.out), bridge: bridge, flip: flip
+    };
+  }
+
+  // Build-time scenarios share the exact model and formatting used by the live readout.
+  function scenarioRows() {
+    var tvLabels = { base: '3ª via 50-50', nexus: 'Nexus/BTG 13/10', quaest: 'Quaest 03/10' };
+    var abLabels = { base: 'Neutra', y2022: 'Como 2022', avg: 'Média 2002–18' };
+    return Object.keys(tvLabels).map(function (tv) {
+      return Object.keys(abLabels).map(function (ab) {
+        var st = defaults();
+        st.tv = TV_PRESETS[tv]; st.ret = AB_PRESETS[ab].ret; st.out = AB_PRESETS[ab].out;
+        var v = view(st);
+        var cells = [['3ª Via', tvLabels[tv]], ['Abstenção', abLabels[ab]], ['Flávio', v.f_p], ['Lula', v.l_p],
+          ['Margem em Votos', v.m], ['Abstenção Absoluta', v.a], ['Abstenção %', v.a_p]];
+        return '<tr data-scenario="' + tv + '-' + ab + '">' + cells.map(function (c, i) {
+          return '<td' + (i > 1 ? ' class="num"' : '') + ' data-label="' + c[0] + '">' + c[1] + '</td>';
+        }).join('') + '</tr>';
+      }).join('');
+    }).join('');
+  }
+  return { BLOCKS: BLOCKS, TV_PRESETS: TV_PRESETS, AB_PRESETS: AB_PRESETS, defaults: defaults, compute: compute, view: view, pct: pct, scenarioRows: scenarioRows };
+})();
+if (typeof module !== 'undefined') module.exports = MODEL;
+
+﻿(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var rows = Array.prototype.slice.call(document.querySelectorAll('#tv [data-k]'));
+  var S = { ret: $('ret'), retl: $('retl'), out: $('out'), outl: $('outl') };
+  var clamp = function (v) { v = Math.round(+v); return isFinite(v) ? Math.min(100, Math.max(0, v)) : 0; };
+  var segTv = document.querySelector('[data-tv]').parentElement;
+  var segAb = document.querySelector('[data-ab]').parentElement;
+
+  function read() {
+    var st = MODEL.defaults();
+    rows.forEach(function (r) {
+      var l = r.querySelector('[data-s="l"]'), f = r.querySelector('[data-s="f"]');
+      var lv = clamp(l.value), fv = clamp(f.value), bad = lv + fv > 100;
+      l.setAttribute('aria-invalid', String(bad)); f.setAttribute('aria-invalid', String(bad));
+      if (bad) fv = 100 - lv;
+      st.tv[r.dataset.k] = [lv, fv];
+      r.querySelector('[data-s="n"]').textContent = String(100 - lv - fv);
+    });
+    st.ret = +S.ret.value; st.retL = +S.retl.value; st.out = +S.out.value; st.outL = +S.outl.value;
+    return st;
+  }
+
+  function update() {
+    var v = MODEL.view(read());
+    ['f', 'f_p', 'l', 'l_p', 'm', 'm_p', 'a', 'a_p'].forEach(function (k) { $('k-' + k.replace('_', '-')).value = v[k]; });
+    $('k-f').className = v.f_class; $('k-l').className = v.l_class;
+    $('k-f-p').className = v.f_pct_class; $('k-l-p').className = v.l_pct_class;
+    $('k-m-c').textContent = v.m_c; $('k-a-c').textContent = v.a_c;
+    $('tv-l').textContent = v.tv_l; $('tv-f').textContent = v.tv_f; $('tv-n').textContent = v.tv_n;
+    $('ret-out').value = v.ret_o; $('out-out').value = v.out_o;
+    $('retl-out').value = S.retl.value + '%'; $('outl-out').value = S.outl.value + '%';
+    var br = $('bridge'); br.innerHTML = br.firstElementChild.outerHTML + v.bridge;
+    $('flip').textContent = v.flip;
+    $('phone-lead').textContent = v.live;
+    $('phone-f').value = v.f_p; $('phone-l').value = v.l_p;
+  }
+
+  function press(group, btn) {
+    group.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+  }
+  segTv.querySelectorAll('[data-tv]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = MODEL.TV_PRESETS[b.dataset.tv];
+      rows.forEach(function (r) { r.querySelector('[data-s="l"]').value = p[r.dataset.k][0]; r.querySelector('[data-s="f"]').value = p[r.dataset.k][1]; });
+      press(segTv, b); update();
+    });
+  });
+  segAb.querySelectorAll('[data-ab]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = MODEL.AB_PRESETS[b.dataset.ab];
+      S.ret.value = p.ret; S.out.value = p.out; S.retl.value = 50; S.outl.value = 50;
+      press(segAb, b); update();
+    });
+  });
+  rows.forEach(function (r) { r.querySelectorAll('input').forEach(function (i) {
+    i.addEventListener('input', function () { press(segTv, null); update(); });
+  }); });
+  Object.keys(S).forEach(function (k) { S[k].addEventListener('input', function () { press(segAb, null); update(); }); });
+  document.querySelectorAll('[data-step]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var input = $(b.dataset.target);
+      input.value = Math.min(+input.max, Math.max(+input.min, +input.value + +b.dataset.step));
+      press(segAb, null); update();
+    });
+  });
+  $('reset-tv').addEventListener('click', function () { segTv.querySelector('[data-tv="base"]').click(); });
+  $('reset-ab').addEventListener('click', function () { segAb.querySelector('[data-ab="base"]').click(); });
+  $('form').addEventListener('submit', function (e) { e.preventDefault(); });
+  $('print').addEventListener('click', function () { window.print(); });
+  update();
+  // Enable only after the live readout and all listeners are ready; Quick Look stays static.
+  $('form').querySelectorAll('input:disabled').forEach(function (i) { i.disabled = false; });
+  document.documentElement.classList.add('js');
+})();
+
+</script>
+</body>
+</html>
